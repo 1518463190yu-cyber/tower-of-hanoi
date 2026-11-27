@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo Script — Tower of Hanoi 20-Minute Challenge</title>
+<style>
+  :root {
+    --bg: #0b0d14;
+    --bg-card: #131725;
+    --bg-soft: #1a2035;
+    --line: #262c44;
+    --text: #e4e6ef;
+    --text-dim: #8b91a7;
+    --text-mute: #5c6278;
+    --blue: #6ea8fe;
+    --blue-glow: rgba(110,168,254,0.25);
+    --green: #6ee7a7;
+    --amber: #fbbf24;
+    --red: #f87171;
+    --violet: #c4b5fd;
+    --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-ui);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    font-size: 16px;
+    padding-bottom: 4rem;
+  }
+
+  /* ===== Cover ===== */
+  .cover {
+    padding: 6rem 2rem 4rem;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .cover .tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    border: 1px solid var(--blue);
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1.5rem;
+  }
+  .cover h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(135deg, #fff, var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .cover .sub {
+    color: var(--text-dim);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+  .cover .meta {
+    display: inline-flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+    color: var(--text-mute);
+    font-size: 0.85rem;
+  }
+  .cover .meta span strong { color: var(--green); font-weight: 600; font-family: var(--font-mono); }
+
+  /* ===== Layout ===== */
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  section.block {
+    padding: 2.5rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.block:last-child { border-bottom: none; }
+
+  .h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+  .h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--blue);
+    margin: 2rem 0 0.75rem;
+  }
+  .h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin: 1.25rem 0 0.5rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  p { color: var(--text-dim); margin-bottom: 0.6rem; }
+
+  /* ===== Time Section ===== */
+  .timeline {
+    position: relative;
+    padding-left: 2.5rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.7rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--blue), transparent);
+  }
+  .tl-item {
+    position: relative;
+    padding: 1.25rem 0;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -2.15rem;
+    top: 1.5rem;
+    width: 12px;
+    height: 12px;
+    background: var(--blue);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px var(--blue-glow);
+  }
+  .tl-time {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  .tl-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  /* ===== Steps ===== */
+  .step {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    margin: 0.5rem 0;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text);
+    line-height: 1.7;
+  }
+  .step .k { color: var(--blue); font-weight: 600; }
+  .step .g { color: var(--green); }
+  .step .r { color: var(--red); }
+  .step .a { color: var(--amber); }
+  .step .v { color: var(--violet); }
+  .step .dim { color: var(--text-dim); }
+
+  .say {
+    background: linear-gradient(135deg, rgba(110,168,254,0.08), rgba(110,231,167,0.08));
+    border-left: 3px solid var(--blue);
+    border-radius: 0 0.5rem 0.5rem 0;
+    padding: 0.85rem 1.1rem;
+    margin: 0.6rem 0;
+  }
+  .say .label {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+  .say p {
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    margin-bottom: 0.4rem;
+  }
+
+  /* ===== Note ===== */
+  .note {
+    background: rgba(251,191,36,0.08);
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+    color: var(--amber);
+  }
+  .note strong { color: var(--amber); }
+
+  /* ===== Code Block ===== */
+  .code-block {
+    background: #0a0d17;
+    border: 1px solid var(--line);
+    border-radius: 0.6rem;
+    padding: 1rem 1.1rem;
+    margin: 0.6rem 0;
+    overflow-x: auto;
+  }
+  .code-block .search-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.7rem;
+    color: var(--violet);
+    background: rgba(196,181,253,0.1);
+    border: 1px solid rgba(196,181,253,0.3);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    margin-bottom: 0.75rem;
+    font-family: var(--font-mono);
+  }
+  .code-block pre {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: #cdd2e3;
+    white-space: pre;
+  }
+  .code-block pre .fn { color: var(--blue); font-weight: 600; }
+  .code-block pre .kw { color: var(--violet); }
+  .code-block pre .cm { color: var(--text-mute); font-style: italic; }
+  .code-block pre .str { color: var(--green); }
+  .code-block pre .num { color: var(--amber); }
+
+  .code-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin: 0.6rem 0;
+  }
+  @media (max-width: 720px) { .code-row { grid-template-columns: 1fr; } }
+
+  /* ===== Quick Ref Table ===== */
+  .ref-grid {
+    display: grid;
+    gap: 0;
+    border: 1px solid var(--line);
+    border-radius: 0.6rem;
+    overflow: hidden;
+    margin: 0.75rem 0;
+  }
+  .ref-head {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    background: var(--bg-soft);
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--blue);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .ref-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    padding: 0.7rem 1rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.85rem;
+  }
+  .ref-row:hover { background: rgba(110,168,254,0.04); }
+  .ref-row .k { color: var(--green); font-family: var(--font-mono); font-size: 0.82rem; }
+  .ref-row .v { color: var(--text-dim); }
+
+  .formula-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+  }
+  @media (max-width: 720px) { .formula-box { grid-template-columns: 1fr; } }
+  .formula {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    padding: 0.85rem 1rem;
+  }
+  .formula .eq {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--amber);
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .formula .desc {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+
+  /* ===== Lists ===== */
+  ul.clean {
+    list-style: none;
+    margin: 0.5rem 0;
+  }
+  ul.clean li {
+    padding: 0.3rem 0 0.3rem 1.2rem;
+    position: relative;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  ul.clean li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--blue);
+    font-weight: 700;
+  }
+  ul.clean li strong { color: var(--text); }
+
+  /* ===== Buttons ===== */
+  .float-hint {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 100;
+  }
+  .float-hint a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1rem;
+    background: var(--blue);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 4px 20px var(--blue-glow);
+    transition: transform 0.2s;
+  }
+  .float-hint a:hover { transform: translateY(-2px); }
+
+  /* ===== Grid Badge ===== */
+  .badge {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .badge.b-blue { background: rgba(110,168,254,0.15); color: var(--blue); }
+  .badge.b-green { background: rgba(110,231,167,0.15); color: var(--green); }
+  .badge.b-violet { background: rgba(196,181,253,0.15); color: var(--violet); }
+  .badge.b-amber { background: rgba(251,191,36,0.15); color: var(--amber); }
+
+  @media print {
+    .float-hint { display: none; }
+    body { background: #fff; color: #111; }
+    .cover h1 { -webkit-text-fill-color: #111; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== COVER ===== -->
+<div class="cover">
+  <span class="tag">🎬 Demo Script</span>
+  <h1>Tower of Hanoi<br>20-Minute Challenge</h1>
+  <p class="sub">Data Structures & Algorithms — Stacks · Recursion · O(2ⁿ) Complexity</p>
+  <div class="meta">
+    <span>Total Duration: <strong>8–10 min</strong></span>
+    <span>Difficulty: <strong>3 / 4 / 5 disks</strong></span>
+    <span>Stack ops: <strong>push · pop · peek — O(1)</strong></span>
+  </div>
+</div>
+
+<!-- ===== PREP ===== -->
+<div class="wrap">
+
+<section class="block">
+  <div class="h1">⚙️ 准备工作</div>
+
+  <div class="h2">电脑上怎么打开游戏</div>
+  <div class="step">
+    <span class="k">方法一（推荐）:</span> 直接 <span class="g">双击</span> <code>index.html</code><br>
+    <span class="k">方法二:</span> 本地服务器（手机也能访问）<br>
+    <span class="dim">$ </span><span class="g">python -m http.server 8080</span> <span class="dim">(Windows)</span><br>
+    <span class="dim">$ </span><span class="g">python3 -m http.server 8080</span> <span class="dim">(Mac/Linux)</span><br>
+    <span class="dim">→ 浏览器打开 </span><span class="g">http://localhost:8080</span>
+  </div>
+
+  <div class="h2">建议演示前先开好</div>
+  <ul class="clean">
+    <li><strong>浏览器</strong> — 打开游戏，按 F11 全屏</li>
+    <li><strong>VS Code / 记事本</strong> — 打开 index.html，方便走读代码</li>
+    <li><strong>DevTools (F12) → Sources</strong> — Ctrl+F 搜索函数名给老师看代码</li>
+  </ul>
+
+  <div class="h2">文件清单</div>
+  <ul class="clean">
+    <li><code>index.html</code> — 游戏本体（54KB，零依赖，双击即开）</li>
+    <li><code>Demo_Script.html</code> — 就是你现在在看的这个页面 🎯</li>
+    <li><code>Tower_of_Hanoi_Technical_Report.pdf</code> — 技术报告（提交用）</li>
+  </ul>
+</section>
+
+<!-- ===== TIMELINE ===== -->
+<section class="block">
+  <div class="h1">⏱️ 演示时间线</div>
+
+  <div class="timeline">
+
+    <!-- Part 1 -->
+    <div class="tl-item">
+      <div class="tl-time">00:00 – 01:00</div>
+      <div class="tl-title">Part 1 — 介绍 & UI 架构</div>
+
+      <div class="say">
+        <div class="label">你说的话</div>
+        <p>👋 大家好，这是我的 Tower of Hanoi 20-Minute Challenge！</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;这个项目同时是游戏和教学工具，展示三个核心知识点：</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;<span class="v">Stack（LIFO）</span>、<span class="g">递归</span>、<span class="a">复杂度 O(2ⁿ)</span>。</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;设计上我用深色主题适合投影，左侧游戏区（计时器、peg、disk），</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;右侧是移动历史、提示和 Stack 实时状态。响应式布局，手机也能用。</p>
+      </div>
+
+      <div class="step">
+        <span class="k">屏幕上做什么:</span> 停在 Start Screen，指着三块区域：计时器 → Pegs → Sidebar
+      </div>
+    </div>
+
+    <!-- Part 2 -->
+    <div class="tl-item">
+      <div class="tl-time">01:00 – 04:00</div>
+      <div class="tl-title">Part 2 — 游戏玩法 & Stack 规则 & 计时器</div>
+
+      <div class="h3">屏幕上依次做👇</div>
+      <div class="step">
+        <span class="k">1️⃣</span> 点击 <span class="a">「Start Challenge」</span> → 计时器开始倒计时 <span class="g">20:00</span><br>
+        <span class="k">2️⃣</span> 默认 3 Disks，点 Peg A 再点 Peg C → 移动 Disk 1<br>
+        <span class="k">3️⃣</span> <span class="r">故意犯错演示:</span> 再点 Peg A 选 Disk 2，点 Peg C<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="dim">→ ❌ 被阻止！大 disk 不能盖小 disk</span><br>
+        <span class="k">4️⃣</span> 点 💡 <span class="v">Hint</span> → 右侧显示最优下一步<br>
+        <span class="k">5️⃣</span> 点 ↩️ <span class="v">Undo</span> → Move Counter 减 1<br>
+        <span class="k">6️⃣</span> 切换到 <span class="a">4 Disks</span> → 棋盘重置，计时器还在跑！<br>
+        <span class="k">7️⃣</span> 点 <span class="a">Restart</span> → 重置，计时器依然继续
+      </div>
+
+      <div class="say">
+        <div class="label">你说的话</div>
+        <p>💬 核心规则只有三条：</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;① 每次只能移动 <span class="g">top disk</span>（LIFO 特性）</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;② <span class="r">大 disk 不能盖在小 disk 上</span></p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;③ <span class="v">非法移动不进计数器</span> —— 这是作业评分点</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;💬 20 分钟 Challenge 是 <span class="r">连续的</span>，什么操作都不能暂停它。</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;5 分钟时 <span class="a">橙色警告</span>，1 分钟时 <span class="r">红色脉冲警告</span>。</p>
+      </div>
+
+      <div class="note">
+        💡 <strong>小技巧：</strong>演示时计时器可以让老师看到它一直在走。不用担心超时，演示不需要真的等 20 分钟。
+      </div>
+    </div>
+
+    <!-- Part 3 -->
+    <div class="tl-item">
+      <div class="tl-time">04:00 – 06:00</div>
+      <div class="tl-title">Part 3 — Learning Mode & 递归讲解</div>
+
+      <div class="h3">屏幕上做👇</div>
+      <div class="step">
+        <span class="k">1️⃣</span> 点击 <span class="a">「📖 Learning Mode」</span> → 下方出现面板<br>
+        <span class="k">2️⃣</span> 点击 <span class="g">「▶️ Autoplay」</span> → 7 步自动播放<br>
+        <span class="k">3️⃣</span> 点 <span class="v">「⏭️ Next」</span> 单步前进一次<br>
+        <span class="k">4️⃣</span> 指向页面下方的 <span class="a">Theory Box</span>（公式框）
+      </div>
+
+      <div class="say">
+        <div class="label">你说的话</div>
+        <p>💬 这 7 步就是递归算法生成的 <span class="g">最优解</span> —— 2³ − 1 = 7。</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;3 盘 7 步，4 盘 15 步，5 盘 31 步。指数增长！</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;💬 <span class="v">递归核心思想：分治</span></p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;① 把 n−1 个 disk 从 源 → Spare（递归解决子问题）</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;② 把最大的 disk 直接 源 → 目标（一步搞定）</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;③ 把 n−1 个 disk 从 Spare → 目标（再递归）</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;💬 <span class="r">关键看计时器 —— 进入 Learning Mode 后它还在走！</span></p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;这是作业硬性要求，我用 setInterval 独立运行实现的。</p>
+      </div>
+
+      <div class="h3">Theory Box 里的三个公式（念出来）</div>
+      <div class="formula-box">
+        <div class="formula">
+          <div class="eq">2ⁿ − 1</div>
+          <div class="desc">最优步数公式（Minimal Moves）</div>
+        </div>
+        <div class="formula">
+          <div class="eq">T(n) = 2T(n−1) + 1</div>
+          <div class="desc">递归关系（Recurrence Relation）</div>
+        </div>
+        <div class="formula">
+          <div class="eq">Base: T(1) = 1</div>
+          <div class="desc">只有 1 个 disk 时只需 1 步</div>
+        </div>
+        <div class="formula">
+          <div class="eq">Complexity → O(2ⁿ)</div>
+          <div class="desc">指数级！n 大了解不动</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Part 4 — Code Walkthrough -->
+    <div class="tl-item">
+      <div class="tl-time">06:00 – 09:00</div>
+      <div class="tl-title">Part 4 — 代码走读 🔥</div>
+
+      <div class="h3">准备</div>
+      <div class="step">
+        按 <span class="k">F12</span> 打开 DevTools → 点 <span class="k">Sources</span> 标签 → 找到 index.html<br>
+        <span class="dim">或者：在 VS Code 里打开 index.html，Ctrl+F 搜关键词</span>
+      </div>
+
+      <!-- Code 1: Stack -->
+      <div class="code-block">
+        <div class="search-badge">🔍 搜索: class Stack</div>
+        <pre><span class="cm">// ① Stack ADT —— 先讲数据结构</span>
+<span class="kw">class</span> <span class="fn">Stack</span> {
+  <span class="fn">push</span>(item)    <span class="cm">// O(1) — 放 disk 上去</span>
+  <span class="fn">pop</span>()       <span class="cm">// O(1) — 拿走 top disk</span>
+  <span class="fn">peek</span>()      <span class="cm">// O(1) — 查看不拿</span>
+  <span class="fn">isEmpty</span>()  <span class="cm">// O(1) — 空不空</span>
+}
+<span class="cm">// 四个操作全是 O(1)，因为 JS 数组 push/pop 是常量时间</span></pre>
+      </div>
+      <div class="note">
+        💡 <strong>讲解点：</strong>Stack ADT 的美妙之处 — 四个操作全 O(1)。这就是为什么 peg 天然就是 Stack。
+      </div>
+
+      <!-- Code 2: State -->
+      <div class="code-block">
+        <div class="search-badge">🔍 搜索: gameState.pegs</div>
+        <pre><span class="cm">// ② 游戏状态 —— peg 就是 Stack</span>
+gameState.pegs = { <span class="str">A</span>: [<span class="num">3</span>, <span class="num">2</span>, <span class="num">1</span>], <span class="str">B</span>: [], <span class="str">C</span>: [] }
+<span class="cm">// A 数组第一个是 bottom（最大 disk），最后一个是 top（最小 disk）</span>
+<span class="cm">// push() / pop() 天然就是 LIFO 行为</span></pre>
+      </div>
+
+      <!-- Code 3: attemptMove -->
+      <div class="code-block">
+        <div class="search-badge">🔍 搜索: attemptMove</div>
+        <pre><span class="cm">// ③ LIFO 规则验证 —— 非法移动怎么阻止</span>
+<span class="kw">function</span> <span class="fn">attemptMove</span>(from, to) {
+  <span class="kw">if</span> (fromPeg.length === <span class="num">0</span>)
+    → 阻止：源 peg 是空的
+  <span class="kw">if</span> (destTop &lt; topDisk)
+    → 阻止：大 disk 不能盖小 disk ✨
+  <span class="cm">// ✅ 全部通过 —— 才执行 move</span>
+  fromPeg.<span class="fn">pop</span>();    <span class="cm">// Stack.pop()</span>
+  toPeg.<span class="fn">push</span>(topDisk); <span class="cm">// Stack.push()</span>
+  gameState.moves++;  <span class="cm">// ⚠️ 只有合法移动才 +1</span>
+}</pre>
+      </div>
+      <div class="note">
+        💡 <strong>讲解点：</strong>关键！非法移动不进计数器 —— 这是作业评分点里明确写的。
+      </div>
+
+      <!-- Code 4: Recursion -->
+      <div class="code-block">
+        <div class="search-badge">🔍 搜索: generateOptimalSolution  或  function solve(n</div>
+        <pre><span class="cm">// ④ 递归求解器 —— 核心算法，三行递归！</span>
+<span class="kw">function</span> <span class="fn">solve</span>(n, from, to, via) {
+  <span class="kw">if</span> (n === <span class="num">1</span>) {
+    moves.push({from, to});          <span class="cm">// Base case</span>
+  } <span class="kw">else</span> {
+    <span class="fn">solve</span>(n-<span class="num">1</span>, from, via, to);       <span class="cm">// 搬 n-1 到 spare</span>
+    moves.push({from, to});           <span class="cm">// 搬最大的</span>
+    <span class="fn">solve</span>(n-<span class="num">1</span>, via, to, from);       <span class="cm">// 搬 n-1 到 target</span>
+  }
+}
+<span class="cm">// solve(3,'A','C','B') → 自动生成全部 7 步最优解 🤯</span></pre>
+      </div>
+
+      <!-- Code 5: Timer -->
+      <div class="code-block">
+        <div class="search-badge">🔍 搜索: startTimer</div>
+        <pre><span class="cm">// ⑤ 计时器 —— 为什么 Learning Mode 不会暂停它</span>
+<span class="kw">function</span> <span class="fn">startTimer</span>() {
+  gameState.timerInterval = <span class="fn">setInterval</span>(() =&gt; {
+    gameState.challengeTimeLeft--;    <span class="cm">// 每秒 -1</span>
+    <span class="kw">if</span> (剩下 5 分钟) → <span class="a">橙色警告</span>
+    <span class="kw">if</span> (剩下 1 分钟) → <span class="r">红色警告</span>
+    <span class="kw">if</span> (到 00:00) → Time's up modal
+  }, <span class="num">1000</span>);
+}
+<span class="cm">// setInterval 独立运行，和 learningMode flag 完全解耦</span></pre>
+      </div>
+      <div class="note">
+        💡 <strong>讲解点：</strong>作业明确说 Learning Mode 不能暂停计时器。解法就是让 setInterval 独立跑 —— 不管用户做什么模式切换，它一直 tick。
+      </div>
+    </div>
+
+    <!-- Part 5 -->
+    <div class="tl-item">
+      <div class="tl-time">09:00 – 10:00</div>
+      <div class="tl-title">Part 5 — 挑战 & 反思</div>
+
+      <div class="say">
+        <div class="label">你说的话</div>
+        <p>💬 做这个项目我遇到 <span class="a">三个主要挑战</span>：</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;<span class="v">① 状态同步</span> — Undo / Hint / Restart / 难度切换</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;全都要改 gameState。状态不一致就出 bug。</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我的解法：<span class="g">所有可变状态集中到一个 gameState 对象</span>。</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;<span class="v">② 计时器和 Learning Mode 隔离</span> —— 作业明确说不能停</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我的解法：<span class="g">setInterval 独立跑，和 mode 完全解耦</span>。</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;<span class="v">③ Disk 叠放位置</span> —— 不同难度 disk 数变，bottom offset 要算对</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我的解法：<span class="g">CSS class pos-0 / pos-1 / pos-2 统一处理</span>。</p>
+        <p>&nbsp;</p>
+        <p>💬 <span class="g">最大的收获：</span>把物理 peg 建模成 Stack 后，</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;所有业务逻辑突然都清晰了 —— 这就是数据结构的力量。</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== QUICK REFERENCE ===== -->
+<section class="block">
+  <div class="h1">📋 速查表</div>
+
+  <div class="h2">代码搜索关键词</div>
+  <div class="ref-grid">
+    <div class="ref-head"><span>搜索这个（Ctrl+F）</span><span>找到什么</span></div>
+    <div class="ref-row"><span class="k">class Stack</span><span class="v">Stack ADT 实现</span></div>
+    <div class="ref-row"><span class="k">gameState.pegs</span><span class="v">Peg → Stack 映射</span></div>
+    <div class="ref-row"><span class="k">attemptMove</span><span class="v">LIFO 规则验证逻辑</span></div>
+    <div class="ref-row"><span class="k">generateOptimalSolution</span><span class="v">递归求解器（核心算法）</span></div>
+    <div class="ref-row"><span class="k">function solve(n</span><span class="v">递归子问题分解</span></div>
+    <div class="ref-row"><span class="k">startTimer</span><span class="v">20 分钟倒计时逻辑</span></div>
+    <div class="ref-row"><span class="k">showToast</span><span class="v">错误反馈机制</span></div>
+  </div>
+
+  <div class="h2">评分点对应</div>
+  <div class="ref-grid">
+    <div class="ref-head"><span>评分项</span><span>对应实现</span></div>
+    <div class="ref-row"><span class="badge b-blue">15分</span> 核心游戏机制 & Stack 验证</span><span class="v">Stack 类 + attemptMove + 非法移动阻止</span></div>
+    <div class="ref-row"><span class="badge b-blue">10分</span> 20分钟计时器 & 摘要</span><span class="v">startTimer + 5m/1m 警告 + 00:00 结束</span></div>
+    <div class="ref-row"><span class="badge b-blue">10分</span> 交互控制 & 难度</span><span class="v">Undo / Hint / Restart / 3·4·5 Disks</span></div>
+    <div class="ref-row"><span class="badge b-blue">15分</span> Learning Mode & 响应式</span><span class="v">Autoplay + 7 步最优解 + 响应式布局</span></div>
+  </div>
+
+  <div class="h2">必背公式 🧠</div>
+  <div class="formula-box">
+    <div class="formula">
+      <div class="eq">Sₙ = 2ⁿ − 1</div>
+      <div class="desc">最优步数公式</div>
+    </div>
+    <div class="formula">
+      <div class="eq">T(n) = 2·T(n−1) + 1</div>
+      <div class="desc">递归关系</div>
+    </div>
+    <div class="formula">
+      <div class="eq">T(1) = 1</div>
+      <div class="desc">Base case</div>
+    </div>
+    <div class="formula">
+      <div class="eq">O(2ⁿ)</div>
+      <div class="desc">时间复杂度 — 指数级</div>
+    </div>
+    <div class="formula">
+      <div class="eq">push / pop / peek</div>
+      <div class="desc">Stack 操作 — 全部 O(1)</div>
+    </div>
+    <div class="formula">
+      <div class="eq">3盘=7步 · 4盘=15步 · 5盘=31步</div>
+      <div class="desc">递增演示</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CLOSING ===== -->
+<section class="block" style="text-align:center; padding-top:3rem;">
+  <p style="font-size:1.4rem; font-weight:700; color:#fff; margin-bottom:0.5rem;">Good luck! 🚀</p>
+  <p style="color: var(--text-mute); font-size: 0.9rem;">Remember — stack operations are O(1), recursion is T(n)=2T(n−1)+1, and don't forget the 2ⁿ−1 formula.</p>
+</section>
+
+</div>
+
+<div class="float-hint">
+  <a href="#" onclick="window.print(); return false;">🖨️ 打印</a>
+</div>
+
+</body>
+</html>

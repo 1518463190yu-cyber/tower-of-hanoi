@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower of Hanoi: The 20-Minute Challenge!</title>
+    <style>
+        /* ============== RESET & BASE ============== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+            --accent-purple: #a855f7;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #475569;
+            --disk-green: #10b981;
+            --disk-purple: #a855f7;
+            --disk-red: #ef4444;
+            --disk-orange: #f59e0b;
+            --disk-cyan: #06b6d4;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.5);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a3e 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        /* ============== HEADER ============== */
+        .header {
+            text-align: center;
+            padding: 1.5rem 1rem;
+            background: linear-gradient(90deg, rgba(59,130,246,0.2), rgba(168,85,247,0.2));
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .header h1 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.3rem;
+        }
+        
+        .header p {
+            color: var(--text-secondary);
+            font-size: clamp(0.85rem, 2vw, 1rem);
+        }
+        
+        /* ============== MAIN LAYOUT ============== */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 1rem;
+        }
+        
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; }
+        }
+        
+        /* ============== GAME AREA ============== */
+        .game-area {
+            background: var(--bg-secondary);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+        
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .timer-display {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            padding: 0.5rem 1.2rem;
+            border-radius: 0.5rem;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            transition: all 0.3s;
+        }
+        
+        .timer-normal { color: var(--accent-green); border-color: var(--accent-green); }
+        .timer-warning { color: var(--accent-yellow); border-color: var(--accent-yellow); animation: pulse 1s infinite; }
+        .timer-danger { color: var(--accent-red); border-color: var(--accent-red); animation: pulse 0.5s infinite; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .stats {
+            display: flex;
+            gap: 1.5rem;
+            font-size: clamp(0.85rem, 2vw, 1rem);
+        }
+        
+        .stat-item {
+            background: var(--bg-tertiary);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .stat-label { color: var(--text-muted); font-size: 0.8rem; }
+        .stat-value { color: var(--accent-blue); font-weight: bold; font-size: 1.1rem; }
+        
+        /* ============== PEGS ============== */
+        .pegs-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            gap: 1rem;
+            padding: 2rem 1rem;
+            min-height: 380px;
+            background: linear-gradient(to bottom, rgba(30,41,59,0.5), rgba(15,23,42,0.8));
+            border-radius: 1rem;
+            border: 2px solid var(--border-color);
+            margin-bottom: 1rem;
+        }
+        
+        .peg-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            max-width: 200px;
+        }
+        
+        .peg-label {
+            font-weight: bold;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.3rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .peg-label.source { color: var(--accent-blue); }
+        .peg-label.spare { color: var(--accent-yellow); }
+        .peg-label.target { color: var(--accent-green); }
+        
+        .peg {
+            position: relative;
+            width: 20px;
+            height: 280px;
+            background: linear-gradient(to right, #64748b, #94a3b8, #64748b);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .peg::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: -30px;
+            width: 80px;
+            height: 15px;
+            background: linear-gradient(to bottom, #475569, #334155);
+            border-radius: 4px;
+        }
+        
+        .peg.selected {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px var(--accent-blue);
+        }
+        
+        .peg.selected::after {
+            content: '▼';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+            animation: bounce 0.6s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-5px); }
+        }
+        
+        /* ============== DISKS ============== */
+        .disks-stack {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+        }
+        
+        .disk {
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.3), 0 3px 6px rgba(0,0,0,0.4);
+            margin-bottom: 2px;
+            transition: transform 0.3s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+            position: absolute;
+            bottom: 0;
+        }
+        
+        .disk:hover {
+            transform: translateY(-2px);
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.3), 0 6px 12px rgba(0,0,0,0.5);
+        }
+        
+        .disk.selected-top {
+            box-shadow: 0 0 15px currentColor, 0 4px 8px rgba(0,0,0,0.4);
+            transform: translateY(-5px);
+        }
+        
+        /* Disk colors for 3 disks */
+        .disk.size-1 { background: linear-gradient(to bottom, #34d399, #059669); width: 60px; z-index: 1; color: #022c22; }
+        .disk.size-2 { background: linear-gradient(to bottom, #c084fc, #7e22ce); width: 90px; z-index: 2; color: #faf5ff; }
+        .disk.size-3 { background: linear-gradient(to bottom, #f87171, #dc2626); width: 120px; z-index: 3; color: #fef2f2; }
+        
+        /* Additional colors for 4 disks */
+        .disk.size-4 { background: linear-gradient(to bottom, #fbbf24, #d97706); width: 150px; z-index: 4; color: #422006; }
+        
+        /* Additional colors for 5 disks */
+        .disk.size-5 { background: linear-gradient(to bottom, #22d3ee, #0891b2); width: 180px; z-index: 5; color: #ecfeff; }
+        
+        /* Disk positioning */
+        .disk.pos-0 { bottom: 2px; }
+        .disk.pos-1 { bottom: 34px; }
+        .disk.pos-2 { bottom: 66px; }
+        .disk.pos-3 { bottom: 98px; }
+        .disk.pos-4 { bottom: 130px; }
+        .disk.pos-5 { bottom: 162px; }
+        .disk.pos-6 { bottom: 194px; }
+        .disk.pos-7 { bottom: 226px; }
+        .disk.pos-8 { bottom: 258px; }
+        
+        @media (max-width: 600px) {
+            .disk.size-1 { width: 45px; }
+            .disk.size-2 { width: 70px; }
+            .disk.size-3 { width: 95px; }
+            .disk.size-4 { width: 120px; }
+            .disk.size-5 { width: 145px; }
+            .peg { height: 220px; }
+            .disk { height: 25px; }
+            .disk.pos-0 { bottom: 2px; }
+            .disk.pos-1 { bottom: 29px; }
+            .disk.pos-2 { bottom: 56px; }
+            .disk.pos-3 { bottom: 83px; }
+            .disk.pos-4 { bottom: 110px; }
+        }
+        
+        /* ============== CONTROLS ============== */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        
+        .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .btn:active { transform: translateY(0); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        
+        .btn-primary { background: var(--accent-blue); color: white; }
+        .btn-success { background: var(--accent-green); color: white; }
+        .btn-warning { background: var(--accent-yellow); color: #1e293b; }
+        .btn-danger { background: var(--accent-red); color: white; }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        
+        .btn.active {
+            background: var(--accent-purple);
+            box-shadow: 0 0 15px rgba(168,85,247,0.5);
+        }
+        
+        .difficulty-select {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .difficulty-select label { color: var(--text-secondary); font-size: 0.9rem; }
+        
+        .diff-btn {
+            padding: 0.4rem 0.9rem;
+            border: 2px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border-radius: 0.4rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .diff-btn:hover { border-color: var(--accent-blue); color: var(--text-primary); }
+        
+        .diff-btn.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+        
+        /* ============== MESSAGE TOAST ============== */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            z-index: 1000;
+            transition: transform 0.4s ease;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.success { background: var(--accent-green); color: white; }
+        .toast.error { background: var(--accent-red); color: white; }
+        .toast.warning { background: var(--accent-yellow); color: #1e293b; }
+        .toast.info { background: var(--accent-blue); color: white; }
+        
+        /* ============== SIDEBAR ============== */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .sidebar-section {
+            background: var(--bg-secondary);
+            border-radius: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .sidebar-section h3 {
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .move-log {
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+        }
+        
+        .move-log::-webkit-scrollbar { width: 6px; }
+        .move-log::-webkit-scrollbar-track { background: var(--bg-tertiary); border-radius: 3px; }
+        .move-log::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+        
+        .log-entry {
+            padding: 0.4rem 0.6rem;
+            border-bottom: 1px solid var(--bg-tertiary);
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .log-entry:last-child { border-bottom: none; }
+        .log-entry .move-num { color: var(--accent-blue); font-weight: bold; min-width: 45px; }
+        .log-entry .move-desc { color: var(--text-secondary); }
+        
+        .hint-box {
+            padding: 0.75rem;
+            background: rgba(168,85,247,0.1);
+            border: 1px solid var(--accent-purple);
+            border-radius: 0.5rem;
+            color: var(--accent-purple);
+            font-size: 0.85rem;
+        }
+        
+        .hint-empty {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+        
+        /* ============== LEARNING MODE ============== */
+        .learning-controls {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+        
+        .learning-controls .btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+        
+        .step-info {
+            text-align: center;
+            padding: 0.5rem;
+            background: var(--bg-tertiary);
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        /* ============== MODAL ============== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 1rem;
+        }
+        
+        .modal-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.4s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal h2 {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal.victory h2 { color: var(--accent-green); }
+        .modal.timeup h2 { color: var(--accent-red); }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .summary-item {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        
+        .summary-item .label { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.3rem; }
+        .summary-item .value { font-size: 1.3rem; font-weight: bold; color: var(--accent-blue); }
+        
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* ============== START SCREEN ============== */
+        .start-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a3e 50%, var(--bg-primary) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .start-screen.hidden { display: none; }
+        
+        .start-content {
+            max-width: 500px;
+            animation: slideUp 0.6s ease;
+        }
+        
+        .start-content h1 {
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        .start-content p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .start-stats {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .start-stat {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+        }
+        
+        .start-stat .num { font-size: 1.5rem; font-weight: bold; color: var(--accent-blue); }
+        .start-stat .desc { font-size: 0.75rem; color: var(--text-muted); }
+        
+        /* ============== THEORY BOX ============== */
+        .theory-box {
+            background: var(--bg-tertiary);
+            border-left: 4px solid var(--accent-purple);
+            padding: 0.75rem 1rem;
+            margin-top: 0.75rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .theory-box strong { color: var(--accent-purple); }
+        
+        .formula {
+            font-family: 'Courier New', monospace;
+            background: var(--bg-primary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.3rem;
+            color: var(--accent-yellow);
+        }
+        
+        /* ============== FOOTER ============== */
+        .footer {
+            text-align: center;
+            padding: 1rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 1rem;
+        }
+        
+        /* ============== ANIMATIONS ============== */
+        .disk-animating { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        @media (max-width: 600px) {
+            .summary-grid { grid-template-columns: 1fr; }
+            .stats { gap: 0.5rem; flex-wrap: wrap; }
+            .stat-item { padding: 0.3rem 0.6rem; font-size: 0.75rem; }
+            .controls { gap: 0.5rem; }
+            .btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+            .pegs-container { min-height: 300px; padding: 1rem 0.5rem; }
+            .peg { height: 220px; }
+            .game-area { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============ START SCREEN ============ -->
+<div class="start-screen" id="startScreen">
+    <div class="start-content">
+        <h1>🏛️ Tower of Hanoi: The 20-Minute Challenge!</h1>
+        <p>A classic puzzle teaching Stacks (LIFO), Recursion, and Algorithm Complexity.<br>Complete puzzles within the continuous 20-minute countdown!</p>
+        
+        <div class="start-stats">
+            <div class="start-stat">
+                <div class="num">3</div>
+                <div class="desc">Difficulty Levels</div>
+            </div>
+            <div class="start-stat">
+                <div class="num">20:00</div>
+                <div class="desc">Challenge Time</div>
+            </div>
+            <div class="start-stat">
+                <div class="num">2ⁿ - 1</div>
+                <div class="desc">Minimal Moves</div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 1.5rem;">
+            <label style="display: block; color: var(--text-secondary); margin-bottom: 0.5rem;">Select Starting Difficulty:</label>
+            <div class="difficulty-select" style="justify-content: center;">
+                <button class="diff-btn active" onclick="selectStartDiff(3)">3 Disks (7 moves)</button>
+                <button class="diff-btn" onclick="selectStartDiff(4)">4 Disks (15 moves)</button>
+                <button class="diff-btn" onclick="selectStartDiff(5)">5 Disks (31 moves)</button>
+            </div>
+        </div>
+        
+        <button class="btn btn-success" style="font-size: 1.2rem; padding: 0.8rem 2rem; margin-top: 1.5rem;" onclick="startChallenge()">
+            🚀 Start Challenge!
+        </button>
+        
+        <div style="margin-top: 1.5rem;">
+            <button class="btn btn-secondary" onclick="enterLearningModeFromStart()">
+                📚 Enter Learning Mode (No Timer)
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ============ MAIN CONTENT ============ -->
+<div id="mainContent" style="display: none;">
+    
+    <!-- HEADER -->
+    <header class="header">
+        <h1>🏛️ Tower of Hanoi Challenge</h1>
+        <p>Master Stacks • Recursion • Complexity Analysis</p>
+    </header>
+    
+    <div class="container">
+        
+        <!-- GAME AREA -->
+        <main class="game-area">
+            
+            <!-- Top Bar: Timer & Stats -->
+            <div class="top-bar">
+                <div class="timer-display timer-normal" id="timerDisplay">20:00</div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Moves</div>
+                        <div class="stat-value" id="moveCount">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Optimal</div>
+                        <div class="stat-value" id="optimalMoves">7</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Hints Used</div>
+                        <div class="stat-value" id="hintsUsed">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Puzzles Done</div>
+                        <div class="stat-value" id="puzzlesDone">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Difficulty Selector -->
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <div class="difficulty-select" style="display: inline-flex;">
+                    <label>Difficulty:</label>
+                    <button class="diff-btn active" id="diffBtn3" onclick="setDifficulty(3)">3 Disks</button>
+                    <button class="diff-btn" id="diffBtn4" onclick="setDifficulty(4)">4 Disks</button>
+                    <button class="diff-btn" id="diffBtn5" onclick="setDifficulty(5)">5 Disks</button>
+                </div>
+            </div>
+            
+            <!-- PEGS -->
+            <div class="pegs-container" id="pegsContainer">
+                <div class="peg-wrapper">
+                    <div class="peg-label source">Peg A (Source)</div>
+                    <div class="disks-stack" id="stackA" data-peg="A">
+                        <div class="peg" data-peg="A"></div>
+                    </div>
+                </div>
+                <div class="peg-wrapper">
+                    <div class="peg-label spare">Peg B (Spare)</div>
+                    <div class="disks-stack" id="stackB" data-peg="B">
+                        <div class="peg" data-peg="B"></div>
+                    </div>
+                </div>
+                <div class="peg-wrapper">
+                    <div class="peg-label target">Peg C (Target)</div>
+                    <div class="disks-stack" id="stackC" data-peg="C">
+                        <div class="peg" data-peg="C"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Controls -->
+            <div class="controls">
+                <button class="btn btn-primary" onclick="undoMove()" id="undoBtn">↩️ Undo</button>
+                <button class="btn btn-warning" onclick="showHint()" id="hintBtn">💡 Hint</button>
+                <button class="btn btn-danger" onclick="restartPuzzle()">🔄 Restart</button>
+                <button class="btn btn-secondary" onclick="enterLearningMode()" id="learnBtn">📖 Learning Mode</button>
+                <button class="btn btn-secondary" onclick="backToStart()">🏠 Home</button>
+            </div>
+            
+            <!-- Learning Mode Panel (hidden by default) -->
+            <div id="learningPanel" style="display: none; background: rgba(59,130,246,0.1); border: 1px solid var(--accent-blue); border-radius: 0.75rem; padding: 1rem; margin-top: 1rem;">
+                <h3 style="color: var(--accent-blue); margin-bottom: 0.75rem; text-align: center;">📚 Step-by-Step Learning Mode</h3>
+                <p style="text-align: center; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                    Watch the optimal solution unfold! The timer continues running in the background.
+                </p>
+                <div class="learning-controls">
+                    <button class="btn btn-secondary" onclick="prevStep()">⏮️ Previous</button>
+                    <button class="btn btn-secondary" onclick="nextStep()">⏭️ Next</button>
+                    <button class="btn btn-primary" onclick="toggleAutoplay()" id="autoplayBtn">▶️ Autoplay</button>
+                    <button class="btn btn-danger" onclick="exitLearningMode()">✖️ Exit</button>
+                </div>
+                <div class="step-info" id="stepInfo">Step 0 / 7 — Ready to begin!</div>
+            </div>
+            
+            <!-- Theory Box -->
+            <div class="theory-box">
+                <strong>💡 Theory:</strong> Each peg is a <span class="formula">Stack</span> (LIFO). 
+                The minimal number of moves is <span class="formula">2ⁿ − 1</span>, where n = number of disks. 
+                Recursive formula: <span class="formula">T(n) = 2T(n−1) + 1</span>, with base case <span class="formula">T(1) = 1</span>.
+            </div>
+            
+        </main>
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            
+            <!-- Move History -->
+            <div class="sidebar-section">
+                <h3>📜 Move History Log</h3>
+                <div class="move-log" id="moveLog">
+                    <div style="color: var(--text-muted); font-style: italic; font-size: 0.8rem; text-align: center; padding: 1rem;">
+                        No moves yet. Click a peg to begin!
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hint Display -->
+            <div class="sidebar-section">
+                <h3>💡 Hint / Next Move</h3>
+                <div id="hintDisplay" class="hint-empty">
+                    Press "Hint" to see the optimal next move.
+                </div>
+            </div>
+            
+            <!-- Current State -->
+            <div class="sidebar-section">
+                <h3>📊 Current Stack State</h3>
+                <div style="font-size: 0.8rem; font-family: monospace; background: var(--bg-primary); padding: 0.75rem; border-radius: 0.5rem; line-height: 1.8;" id="stackStateDisplay">
+                    Loading...
+                </div>
+            </div>
+            
+            <!-- Rules -->
+            <div class="sidebar-section">
+                <h3>📋 Rules</h3>
+                <ul style="font-size: 0.8rem; color: var(--text-secondary); padding-left: 1.2rem; line-height: 1.6;">
+                    <li>Only move the <strong>top disk</strong> from a peg</li>
+                    <li>Only <strong>one disk</strong> at a time</li>
+                    <li><strong>Larger disks</strong> cannot go on <strong>smaller ones</strong></li>
+                    <li>Move all disks from <strong>Peg A</strong> to <strong>Peg C</strong></li>
+                </ul>
+            </div>
+            
+        </aside>
+    </div>
+    
+    <footer class="footer">
+        Tower of Hanoi — Data Structures & Algorithms Assignment | Stacks • Recursion • Complexity
+    </footer>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="toast" id="toast"></div>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+        <h2 id="modalTitle">🎉 Congratulations!</h2>
+        <div id="modalBody">
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="label">Your Moves</div>
+                    <div class="value" id="modalMoves">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Optimal Moves</div>
+                    <div class="value" id="modalOptimal">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Efficiency</div>
+                    <div class="value" id="modalEfficiency">0%</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Puzzles Done</div>
+                    <div class="value" id="modalPuzzles">0</div>
+                </div>
+            </div>
+            <p id="modalMessage" style="text-align: center; color: var(--text-secondary); margin-bottom: 1rem;"></p>
+        </div>
+        <div class="modal-actions" id="modalActions">
+            <button class="btn btn-primary" onclick="closeModal()">Continue</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============== STACK DATA STRUCTURE (ADT) ==============
+class Stack {
+    constructor(name = '') {
+        this.name = name;
+        this.items = [];
+    }
+    push(item) { this.items.push(item); }
+    pop() { return this.items.pop(); }
+    peek() { return this.items.length > 0 ? this.items[this.items.length - 1] : null; }
+    isEmpty() { return this.items.length === 0; }
+    size() { return this.items.length; }
+    getItems() { return [...this.items]; } // Copy
+}
+
+// ============== GAME STATE ==============
+let gameState = {
+    difficulty: 3,
+    pegs: { A: [], B: [], C: [] },      // Each is an array, [bottom...top]
+    moves: 0,
+    hintsUsed: 0,
+    moveHistory: [],                    // {from, to, disk}
+    selectedPeg: null,                  // Currently selected source peg
+    totalPuzzlesDone: 0,
+    challengeStarted: false,
+    challengeTimeLeft: 20 * 60,         // seconds
+    timerInterval: null,
+    challengeActive: false,
+    // Learning mode
+    learningMode: false,
+    learningStep: 0,
+    learningSolution: [],               // Sequence of moves {from, to}
+    autoplayInterval: null,
+};
+
+let startDifficulty = 3;
+
+// ============== INITIALIZATION ==============
+function selectStartDiff(n) {
+    startDifficulty = n;
+    document.querySelectorAll('#startScreen .diff-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+function startChallenge() {
+    gameState.challengeActive = true;
+    gameState.challengeStarted = true;
+    gameState.difficulty = startDifficulty;
+    initPegs();
+    resetChallengeTimer();
+    startTimer();
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('mainContent').style.display = 'block';
+    updateUI();
+    showToast('🚀 Challenge started! 20 minutes on the clock.', 'info');
+}
+
+function enterLearningModeFromStart() {
+    gameState.challengeActive = false;
+    gameState.difficulty = 3;
+    initPegs();
+    gameState.learningMode = true;
+    gameState.learningStep = 0;
+    gameState.learningSolution = generateOptimalSolution(3);
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('mainContent').style.display = 'block';
+    document.getElementById('learningPanel').style.display = 'block';
+    document.getElementById('stepInfo').textContent = `Step 0 / ${gameState.learningSolution.length} — Ready to begin!`;
+    updateUI();
+}
+
+function backToStart() {
+    stopTimer();
+    stopAutoplay();
+    location.reload();
+}
+
+function initPegs() {
+    gameState.pegs = { A: [], B: [], C: [] };
+    for (let i = gameState.difficulty; i >= 1; i--) {
+        gameState.pegs.A.push(i); // [n, n-1, ..., 1] — bottom first
+    }
+    gameState.moves = 0;
+    gameState.moveHistory = [];
+    gameState.selectedPeg = null;
+    gameState.learningMode = false;
+    gameState.learningStep = 0;
+    stopAutoplay();
+    renderPegs();
+    updateSidebar();
+    updateControls();
+}
+
+function setDifficulty(n) {
+    gameState.difficulty = n;
+    document.getElementById('diffBtn3').classList.toggle('active', n === 3);
+    document.getElementById('diffBtn4').classList.toggle('active', n === 4);
+    document.getElementById('diffBtn5').classList.toggle('active', n === 5);
+    initPegs();
+    document.getElementById('optimalMoves').textContent = Math.pow(2, n) - 1;
+    showToast(`🎯 Difficulty set to ${n} disks (${Math.pow(2, n)-1} optimal moves)`, 'info');
+}
+
+// ============== RENDERING ==============
+function renderPegs() {
+    for (const pegName of ['A', 'B', 'C']) {
+        const container = document.getElementById('stack' + pegName);
+        const pegEl = container.querySelector('.peg');
+        // Clear existing disks
+        container.querySelectorAll('.disk').forEach(d => d.remove());
+        const disks = gameState.pegs[pegName];
+        disks.forEach((diskSize, idx) => {
+            const div = document.createElement('div');
+            const pos = gameState.difficulty - 1 - idx; // bottom disk at pos 0
+            div.className = `disk size-${diskSize} pos-${pos}`;
+            div.textContent = `Disk ${diskSize}`;
+            div.dataset.peg = pegName;
+            div.dataset.size = diskSize;
+            div.dataset.index = idx;
+            // Highlight top if selected source
+            if (gameState.selectedPeg === pegName && idx === disks.length - 1) {
+                div.classList.add('selected-top');
+            }
+            container.insertBefore(div, pegEl);
+        });
+        // Click handlers on disks and pegs
+        container.onclick = () => onPegClick(pegName);
+        pegEl.onclick = (e) => { e.stopPropagation(); onPegClick(pegName); };
+    }
+    // Apply selected class on peg
+    document.querySelectorAll('.peg').forEach(p => p.classList.remove('selected'));
+    if (gameState.selectedPeg) {
+        document.querySelector(`.peg[data-peg="${gameState.selectedPeg}"]`)?.classList.add('selected');
+    }
+}
+
+// ============== INTERACTION ==============
+function onPegClick(pegName) {
+    if (gameState.learningMode || !gameState.challengeActive) {
+        // In learning mode, still allow clicking if not autoplaying
+        if (gameState.learningMode && !gameState.autoplayInterval) {
+            // In learning mode we are stepping through pre-solved solution
+            showToast('📚 Use Learning Mode controls to step through', 'info');
+        }
+        return;
+    }
+    
+    if (gameState.challengeTimeLeft <= 0) {
+        showToast('⏰ Time is up! Game over.', 'error');
+        return;
+    }
+    
+    // First click: select source peg
+    if (gameState.selectedPeg === null) {
+        if (gameState.pegs[pegName].length === 0) {
+            showToast('❌ Source peg contains no disks.', 'error');
+            return;
+        }
+        gameState.selectedPeg = pegName;
+        showToast(`📍 Selected Peg ${pegName} — click destination.`, 'info');
+    } else {
+        // Second click: try to move from selectedPeg to pegName
+        if (gameState.selectedPeg === pegName) {
+            gameState.selectedPeg = null;
+            showToast('Deselected.', 'info');
+            renderPegs();
+            return;
+        }
+        attemptMove(gameState.selectedPeg, pegName);
+        gameState.selectedPeg = null;
+    }
+    renderPegs();
+}
+
+function attemptMove(from, to) {
+    const fromPeg = gameState.pegs[from];
+    const toPeg = gameState.pegs[to];
+    
+    // Source check
+    if (fromPeg.length === 0) {
+        showToast('❌ Source peg contains no disks.', 'error');
+        return;
+    }
+    
+    const topDisk = fromPeg[fromPeg.length - 1];
+    
+    // Destination check: LIFO rule - larger cannot go on smaller
+    if (toPeg.length > 0 && toPeg[toPeg.length - 1] < topDisk) {
+        showToast(`❌ Illegal move! Disk ${topDisk} (larger) cannot be placed on Disk ${toPeg[toPeg.length - 1]} (smaller).`, 'error');
+        return;
+    }
+    
+    // Perform move (using Stack push/pop semantics internally)
+    fromPeg.pop(); // Stack.pop
+    toPeg.push(topDisk); // Stack.push
+    
+    gameState.moves++;
+    gameState.moveHistory.push({ from, to, disk: topDisk });
+    
+    showToast(`✅ Moved Disk ${topDisk} from Peg ${from} → Peg ${to}`, 'success');
+    
+    updateUI();
+    
+    // Check win
+    if (gameState.pegs.C.length === gameState.difficulty) {
+        onPuzzleComplete();
+    }
+}
+
+function undoMove() {
+    if (gameState.learningMode) {
+        showToast('❌ Undo is disabled in Learning Mode.', 'error');
+        return;
+    }
+    if (gameState.moveHistory.length === 0) {
+        showToast('⚠️ Nothing to undo.', 'warning');
+        return;
+    }
+    if (gameState.challengeActive && gameState.challengeTimeLeft <= 0) {
+        showToast('⏰ Time is up!', 'error');
+        return;
+    }
+    
+    const last = gameState.moveHistory.pop();
+    gameState.pegs[last.to].pop();
+    gameState.pegs[last.from].push(last.disk);
+    gameState.moves = Math.max(0, gameState.moves - 1);
+    
+    showToast(`↩️ Undid: Disk ${last.disk} from Peg ${last.to} → Peg ${last.from}`, 'info');
+    gameState.selectedPeg = null;
+    renderPegs();
+    updateSidebar();
+    updateControls();
+}
+
+function showHint() {
+    if (gameState.learningMode) {
+        showToast('📚 In Learning Mode, all steps are shown automatically.', 'info');
+        return;
+    }
+    if (gameState.pegs.C.length === gameState.difficulty) {
+        showToast('🎉 Puzzle already solved!', 'success');
+        return;
+    }
+    const solution = generateOptimalSolution(gameState.difficulty);
+    // Find first step in solution matching current state
+    const stepsTaken = gameState.moveHistory;
+    // Simple approach: show first unsolved step from solution
+    let hint = solution.find((s, i) => {
+        return !gameState.moveHistory.some(h => h.from === s.from && h.to === s.to);
+    });
+    
+    if (hint) {
+        gameState.hintsUsed++;
+        document.getElementById('hintsUsed').textContent = gameState.hintsUsed;
+        showToast(`💡 Hint: Move Disk ${getTopDiskSize(hint.from)} from Peg ${hint.from} to Peg ${hint.to}`, 'info');
+        document.getElementById('hintDisplay').innerHTML = 
+            `Move Disk <strong>${getTopDiskSize(hint.from)}</strong> from <strong>Peg ${hint.from}</strong> to <strong>Peg ${hint.to}</strong>`;
+        updateUI();
+    } else {
+        showToast('💡 No hint available right now.', 'warning');
+    }
+}
+
+function getTopDiskSize(peg) {
+    const arr = gameState.pegs[peg];
+    return arr.length > 0 ? arr[arr.length - 1] : 0;
+}
+
+function restartPuzzle() {
+    if (gameState.challengeActive && gameState.challengeTimeLeft <= 0) {
+        showToast('⏰ Time is up!', 'error');
+        return;
+    }
+    initPegs();
+    showToast('🔄 Puzzle restarted. Timer continues.', 'warning');
+}
+
+// ============== WIN CHECK ==============
+function onPuzzleComplete() {
+    const optimal = Math.pow(2, gameState.difficulty) - 1;
+    const efficiency = optimal > 0 ? Math.round((optimal / gameState.moves) * 100) : 100;
+    const perfect = gameState.moves === optimal;
+    
+    if (gameState.challengeActive) {
+        gameState.totalPuzzlesDone++;
+    }
+    
+    document.getElementById('modalTitle').textContent = perfect ? '🏆 Perfect Solution!' : '🎉 Puzzle Complete!';
+    document.getElementById('modal').className = 'modal victory';
+    document.getElementById('modalMoves').textContent = gameState.moves;
+    document.getElementById('modalOptimal').textContent = optimal;
+    document.getElementById('modalEfficiency').textContent = efficiency + '%';
+    document.getElementById('modalPuzzles').textContent = gameState.totalPuzzlesDone;
+    document.getElementById('modalMessage').textContent = perfect 
+        ? 'You achieved the mathematical optimal solution! Outstanding work!' 
+        : efficiency > 70 
+            ? 'Great job! Close to the optimal solution.' 
+            : 'Good progress! Try to optimize your moves next time.';
+    document.getElementById('modalActions').innerHTML = '';
+    
+    if (gameState.challengeActive && gameState.challengeTimeLeft > 0) {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-success';
+        btn.textContent = '⚡ Next Challenge (Continue Timer)';
+        btn.onclick = () => {
+            closeModal();
+            initPegs();
+            // Stay at same difficulty, move counter resets
+            showToast('🚀 Next puzzle starting! Timer still running.', 'info');
+        };
+        document.getElementById('modalActions').appendChild(btn);
+        
+        const upgradeBtn = document.createElement('button');
+        upgradeBtn.className = 'btn btn-primary';
+        upgradeBtn.textContent = '🔼 Increase Difficulty';
+        upgradeBtn.onclick = () => {
+            closeModal();
+            const next = Math.min(5, gameState.difficulty + 1);
+            setDifficulty(next);
+        };
+        document.getElementById('modalActions').appendChild(upgradeBtn);
+    }
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'btn btn-secondary';
+    closeBtn.textContent = '✕ Close';
+    closeBtn.onclick = closeModal;
+    document.getElementById('modalActions').appendChild(closeBtn);
+    
+    openModal();
+    updateUI();
+}
+
+// ============== TIMER ==============
+function resetChallengeTimer() {
+    gameState.challengeTimeLeft = 20 * 60;
+    document.getElementById('timerDisplay').textContent = '20:00';
+    document.getElementById('timerDisplay').className = 'timer-display timer-normal';
+}
+
+function startTimer() {
+    stopTimer();
+    gameState.timerInterval = setInterval(() => {
+        gameState.challengeTimeLeft--;
+        updateTimerDisplay();
+        
+        if (gameState.challengeTimeLeft === 300) { // 5:00
+            showToast('⚠️ 5 minutes remaining!', 'warning');
+        }
+        if (gameState.challengeTimeLeft === 60) { // 1:00
+            showToast('🚨 ONLY 1 MINUTE REMAINING!', 'error');
+        }
+        
+        if (gameState.challengeTimeLeft <= 0) {
+            stopTimer();
+            stopAutoplay();
+            gameState.challengeTimeLeft = 0;
+            updateTimerDisplay();
+            onTimeUp();
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    if (gameState.timerInterval) {
+        clearInterval(gameState.timerInterval);
+        gameState.timerInterval = null;
+    }
+}
+
+function updateTimerDisplay() {
+    const m = Math.floor(gameState.challengeTimeLeft / 60);
+    const s = gameState.challengeTimeLeft % 60;
+    document.getElementById('timerDisplay').textContent = 
+        `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    
+    const timerEl = document.getElementById('timerDisplay');
+    if (gameState.challengeTimeLeft <= 60) {
+        timerEl.className = 'timer-display timer-danger';
+    } else if (gameState.challengeTimeLeft <= 300) {
+        timerEl.className = 'timer-display timer-warning';
+    } else {
+        timerEl.className = 'timer-display timer-normal';
+    }
+}
+
+function onTimeUp() {
+    gameState.challengeActive = false;
+    document.getElementById('modalTitle').textContent = '⏰ Time\'s up!';
+    document.getElementById('modal').className = 'modal timeup';
+    document.getElementById('modalMoves').textContent = gameState.moves;
+    document.getElementById('modalOptimal').textContent = Math.pow(2, gameState.difficulty) - 1;
+    const eff = Math.pow(2, gameState.difficulty) - 1 > 0 
+        ? Math.round((Math.pow(2, gameState.difficulty) - 1) / Math.max(1, gameState.moves) * 100) : 0;
+    document.getElementById('modalEfficiency').textContent = eff + '%';
+    document.getElementById('modalPuzzles').textContent = gameState.totalPuzzlesDone;
+    document.getElementById('modalMessage').textContent = '20-minute challenge has ended. Here\'s your final summary!';
+    document.getElementById('modalActions').innerHTML = '';
+    
+    const homeBtn = document.createElement('button');
+    homeBtn.className = 'btn btn-primary';
+    homeBtn.textContent = '🏠 Return to Home';
+    homeBtn.onclick = backToStart;
+    document.getElementById('modalActions').appendChild(homeBtn);
+    
+    openModal();
+}
+
+// ============== LEARNING MODE ==============
+function enterLearningMode() {
+    gameState.learningMode = true;
+    gameState.learningStep = 0;
+    gameState.learningSolution = generateOptimalSolution(gameState.difficulty);
+    // Reset board for learning
+    initPegs();
+    // Build initial state for learning (reset pegs)
+    gameState.pegs = { A: [], B: [], C: [] };
+    for (let i = gameState.difficulty; i >= 1; i--) gameState.pegs.A.push(i);
+    gameState.moveHistory = [];
+    gameState.moves = 0;
+    
+    document.getElementById('learningPanel').style.display = 'block';
+    document.getElementById('hintDisplay').textContent = 'Learning Mode: ' + gameState.learningSolution.length + ' optimal steps';
+    document.getElementById('stepInfo').textContent = `Step 0 / ${gameState.learningSolution.length} — Ready to begin!`;
+    
+    renderPegs();
+    updateSidebar();
+    
+    if (!gameState.challengeActive) {
+        showToast('📚 Learning Mode entered (no timer)', 'info');
+    } else {
+        showToast('📚 Learning Mode — Challenge timer continues in background!', 'info');
+    }
+}
+
+function exitLearningMode() {
+    stopAutoplay();
+    gameState.learningMode = false;
+    document.getElementById('learningPanel').style.display = 'none';
+    showToast('📕 Exited Learning Mode.', 'info');
+}
+
+function nextStep() {
+    if (!gameState.learningMode) return;
+    if (gameState.learningStep >= gameState.learningSolution.length) {
+        showToast('🎉 All steps complete!', 'success');
+        return;
+    }
+    const step = gameState.learningSolution[gameState.learningStep];
+    executeLearningMove(step);
+    gameState.learningStep++;
+    updateLearningDisplay();
+}
+
+function prevStep() {
+    if (!gameState.learningMode) return;
+    if (gameState.learningStep <= 0) {
+        showToast('⚠️ Already at step 0.', 'warning');
+        return;
+    }
+    gameState.learningStep--;
+    const step = gameState.learningSolution[gameState.learningStep];
+    // Reverse the move
+    gameState.pegs[step.to].pop();
+    gameState.pegs[step.from].push(step.disk || gameState.pegs[step.from].length === 0 ? gameState.pegs[step.to].length === 0 ? 0 : null : step.from);
+    // Actually we need the disk size - re-query
+    // Since step objects have {from, to, disk}
+    gameState.pegs[step.to].push(step.disk);
+    gameState.pegs[step.from].pop();
+    updateLearningDisplay();
+    renderPegs();
+    updateSidebar();
+}
+
+function executeLearningMove(step) {
+    const { from, to } = step;
+    const disk = gameState.pegs[from].pop();
+    gameState.pegs[to].push(disk);
+    step.disk = disk;
+    gameState.moves = gameState.learningStep + 1;
+    renderPegs();
+    updateSidebar();
+    showToast(`📚 Step ${gameState.learningStep + 1}: Move Disk ${disk} from Peg ${from} → Peg ${to}`, 'info');
+}
+
+function updateLearningDisplay() {
+    document.getElementById('stepInfo').textContent = 
+        `Step ${gameState.learningStep} / ${gameState.learningSolution.length}` +
+        (gameState.learningStep < gameState.learningSolution.length 
+            ? ` — Next: Disk ${gameState.learningSolution[gameState.learningStep].disk || '?'} from Peg ${gameState.learningSolution[gameState.learningStep].from} → Peg ${gameState.learningSolution[gameState.learningStep].to}` 
+            : ' — Done! 🎉');
+}
+
+let autoplayInterval = null;
+function toggleAutoplay() {
+    if (!gameState.learningMode) return;
+    if (gameState.autoplayInterval) {
+        stopAutoplay();
+        document.getElementById('autoplayBtn').textContent = '▶️ Autoplay';
+        showToast('⏸️ Autoplay paused.', 'info');
+    } else {
+        if (gameState.learningStep >= gameState.learningSolution.length) {
+            showToast('⚠️ Reset to replay.', 'warning');
+            // Reset pegs
+            gameState.pegs = { A: [], B: [], C: [] };
+            for (let i = gameState.difficulty; i >= 1; i--) gameState.pegs.A.push(i);
+            gameState.learningStep = 0;
+            gameState.moves = 0;
+            renderPegs();
+        }
+        gameState.autoplayInterval = setInterval(() => {
+            if (gameState.learningStep >= gameState.learningSolution.length) {
+                stopAutoplay();
+                document.getElementById('autoplayBtn').textContent = '▶️ Autoplay';
+                showToast('🎉 Autoplay complete!', 'success');
+                return;
+            }
+            const step = gameState.learningSolution[gameState.learningStep];
+            executeLearningMove(step);
+            gameState.learningStep++;
+            updateLearningDisplay();
+        }, 1200);
+        document.getElementById('autoplayBtn').textContent = '⏸️ Pause';
+        showToast('▶️ Autoplay started.', 'success');
+    }
+}
+
+function stopAutoplay() {
+    if (gameState.autoplayInterval) {
+        clearInterval(gameState.autoplayInterval);
+        gameState.autoplayInterval = null;
+    }
+}
+
+// ============== OPTIMAL SOLUTION GENERATOR (Recursive) ==============
+function generateOptimalSolution(n) {
+    const moves = [];
+    function solve(n, from, to, via) {
+        if (n === 1) {
+            moves.push({ from, to, disk: 1 });
+        } else {
+            solve(n - 1, from, via, to);
+            moves.push({ from, to, disk: n });
+            solve(n - 1, via, to, from);
+        }
+    }
+    solve(n, 'A', 'C', 'B');
+    return moves;
+}
+
+// ============== UI UPDATE ==============
+function updateUI() {
+    renderPegs();
+    updateSidebar();
+    updateControls();
+    document.getElementById('moveCount').textContent = gameState.moves;
+    document.getElementById('optimalMoves').textContent = Math.pow(2, gameState.difficulty) - 1;
+    document.getElementById('hintsUsed').textContent = gameState.hintsUsed;
+    document.getElementById('puzzlesDone').textContent = gameState.totalPuzzlesDone;
+}
+
+function updateSidebar() {
+    // Move log
+    const log = document.getElementById('moveLog');
+    if (gameState.moveHistory.length === 0) {
+        log.innerHTML = '<div style="color: var(--text-muted); font-style: italic; font-size: 0.8rem; text-align: center; padding: 1rem;">No moves yet. Click a peg to begin!</div>';
+    } else {
+        log.innerHTML = gameState.moveHistory.map((h, i) => 
+            `<div class="log-entry">
+                <span class="move-num">Move ${i+1}:</span>
+                <span class="move-desc">Disk ${h.disk} • ${h.from} → ${h.to}</span>
+            </div>`
+        ).join('');
+        log.scrollTop = log.scrollHeight;
+    }
+    
+    // Stack state (ASCII visualization)
+    const state = document.getElementById('stackStateDisplay');
+    const lines = ['Peg A: ', 'Peg B: ', 'Peg C: '];
+    ['A', 'B', 'C'].forEach((peg, idx) => {
+        const disks = gameState.pegs[peg];
+        if (disks.length === 0) {
+            lines[idx] += '(empty)';
+        } else {
+            lines[idx] += disks.join(' → ');
+        }
+    });
+    state.innerHTML = lines.join('<br>');
+}
+
+function updateControls() {
+    // Nothing extra needed right now
+}
+
+// ============== TOAST ==============
+let toastTimer = null;
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast');
+    toast.className = `toast ${type} show`;
+    toast.textContent = message;
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// ============== MODAL ==============
+function openModal() {
+    document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('show');
+}
+
+// ============== KEYBOARD SHORTCUTS ==============
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+    if (gameState.challengeActive && gameState.challengeTimeLeft > 0 && !gameState.learningMode) {
+        if (e.key === 'z' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); undoMove(); }
+    }
+    if (gameState.learningMode) {
+        if (e.key === 'ArrowRight') nextStep();
+        if (e.key === 'ArrowLeft') prevStep();
+        if (e.key === ' ') { e.preventDefault(); toggleAutoplay(); }
+    }
+});
+
+// Auto-correct peg state for learning mode when solution is generated
+// Each solution step already has correct disk size from recursive generator
+</script>
+
+</body>
+</html>
