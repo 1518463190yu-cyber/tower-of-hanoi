@@ -599,6 +599,40 @@
             margin-top: 1rem;
         }
         
+        /* ============== LANGUAGE SWITCH ============== */
+        .lang-switch {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 2500;
+            display: inline-flex;
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            padding: 3px;
+            backdrop-filter: blur(8px);
+        }
+        .lang-switch button {
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            line-height: 1.2;
+        }
+        .lang-switch button:hover { color: var(--text-primary); }
+        .lang-switch button.active {
+            background: var(--accent-blue);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+        }
+        .lang-switch.on-start { position: absolute; top: 1.5rem; right: 1.5rem; z-index: 3001; }
+
         /* ============== ANIMATIONS ============== */
         .disk-animating { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         
@@ -618,40 +652,44 @@
 
 <!-- ============ START SCREEN ============ -->
 <div class="start-screen" id="startScreen">
+    <div class="lang-switch on-start" id="langSwitchStart">
+        <button data-lang="en" onclick="setLanguage('en')">English</button>
+        <button data-lang="zh" onclick="setLanguage('zh')">中文</button>
+    </div>
     <div class="start-content">
-        <h1>🏛️ Tower of Hanoi: The 20-Minute Challenge!</h1>
-        <p>A classic puzzle teaching Stacks (LIFO), Recursion, and Algorithm Complexity.<br>Complete puzzles within the continuous 20-minute countdown!</p>
+        <h1 data-i18n="start.title">🏛️ Tower of Hanoi: The 20-Minute Challenge!</h1>
+        <p data-i18n-html="start.subtitle">A classic puzzle teaching Stacks (LIFO), Recursion, and Algorithm Complexity.<br>Complete puzzles within the continuous 20-minute countdown!</p>
         
         <div class="start-stats">
             <div class="start-stat">
                 <div class="num">3</div>
-                <div class="desc">Difficulty Levels</div>
+                <div class="desc" data-i18n="start.statLevels">Difficulty Levels</div>
             </div>
             <div class="start-stat">
                 <div class="num">20:00</div>
-                <div class="desc">Challenge Time</div>
+                <div class="desc" data-i18n="start.statTime">Challenge Time</div>
             </div>
             <div class="start-stat">
                 <div class="num">2ⁿ - 1</div>
-                <div class="desc">Minimal Moves</div>
+                <div class="desc" data-i18n="start.statMoves">Minimal Moves</div>
             </div>
         </div>
         
         <div style="margin-top: 1.5rem;">
-            <label style="display: block; color: var(--text-secondary); margin-bottom: 0.5rem;">Select Starting Difficulty:</label>
+            <label style="display: block; color: var(--text-secondary); margin-bottom: 0.5rem;" data-i18n="start.selectDiff">Select Starting Difficulty:</label>
             <div class="difficulty-select" style="justify-content: center;">
-                <button class="diff-btn active" onclick="selectStartDiff(3)">3 Disks (7 moves)</button>
-                <button class="diff-btn" onclick="selectStartDiff(4)">4 Disks (15 moves)</button>
-                <button class="diff-btn" onclick="selectStartDiff(5)">5 Disks (31 moves)</button>
+                <button class="diff-btn active" onclick="selectStartDiff(3)" data-i18n="start.diff3">3 Disks (7 moves)</button>
+                <button class="diff-btn" onclick="selectStartDiff(4)" data-i18n="start.diff4">4 Disks (15 moves)</button>
+                <button class="diff-btn" onclick="selectStartDiff(5)" data-i18n="start.diff5">5 Disks (31 moves)</button>
             </div>
         </div>
         
-        <button class="btn btn-success" style="font-size: 1.2rem; padding: 0.8rem 2rem; margin-top: 1.5rem;" onclick="startChallenge()">
+        <button class="btn btn-success" style="font-size: 1.2rem; padding: 0.8rem 2rem; margin-top: 1.5rem;" onclick="startChallenge()" data-i18n="start.startBtn">
             🚀 Start Challenge!
         </button>
         
         <div style="margin-top: 1.5rem;">
-            <button class="btn btn-secondary" onclick="enterLearningModeFromStart()">
+            <button class="btn btn-secondary" onclick="enterLearningModeFromStart()" data-i18n="start.learnBtn">
                 📚 Enter Learning Mode (No Timer)
             </button>
         </div>
@@ -661,10 +699,15 @@
 <!-- ============ MAIN CONTENT ============ -->
 <div id="mainContent" style="display: none;">
     
+    <div class="lang-switch" id="langSwitchMain">
+        <button data-lang="en" onclick="setLanguage('en')">English</button>
+        <button data-lang="zh" onclick="setLanguage('zh')">中文</button>
+    </div>
+
     <!-- HEADER -->
     <header class="header">
-        <h1>🏛️ Tower of Hanoi Challenge</h1>
-        <p>Master Stacks • Recursion • Complexity Analysis</p>
+        <h1 data-i18n="header.title">🏛️ Tower of Hanoi Challenge</h1>
+        <p data-i18n="header.subtitle">Master Stacks • Recursion • Complexity Analysis</p>
     </header>
     
     <div class="container">
@@ -677,19 +720,19 @@
                 <div class="timer-display timer-normal" id="timerDisplay">20:00</div>
                 <div class="stats">
                     <div class="stat-item">
-                        <div class="stat-label">Moves</div>
+                        <div class="stat-label" data-i18n="stats.moves">Moves</div>
                         <div class="stat-value" id="moveCount">0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-label">Optimal</div>
+                        <div class="stat-label" data-i18n="stats.optimal">Optimal</div>
                         <div class="stat-value" id="optimalMoves">7</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-label">Hints Used</div>
+                        <div class="stat-label" data-i18n="stats.hints">Hints Used</div>
                         <div class="stat-value" id="hintsUsed">0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-label">Puzzles Done</div>
+                        <div class="stat-label" data-i18n="stats.puzzles">Puzzles Done</div>
                         <div class="stat-value" id="puzzlesDone">0</div>
                     </div>
                 </div>
@@ -698,29 +741,29 @@
             <!-- Difficulty Selector -->
             <div style="text-align: center; margin-bottom: 1rem;">
                 <div class="difficulty-select" style="display: inline-flex;">
-                    <label>Difficulty:</label>
-                    <button class="diff-btn active" id="diffBtn3" onclick="setDifficulty(3)">3 Disks</button>
-                    <button class="diff-btn" id="diffBtn4" onclick="setDifficulty(4)">4 Disks</button>
-                    <button class="diff-btn" id="diffBtn5" onclick="setDifficulty(5)">5 Disks</button>
+                    <label data-i18n="diff.label">Difficulty:</label>
+                    <button class="diff-btn active" id="diffBtn3" onclick="setDifficulty(3)" data-i18n="diff.3">3 Disks</button>
+                    <button class="diff-btn" id="diffBtn4" onclick="setDifficulty(4)" data-i18n="diff.4">4 Disks</button>
+                    <button class="diff-btn" id="diffBtn5" onclick="setDifficulty(5)" data-i18n="diff.5">5 Disks</button>
                 </div>
             </div>
             
             <!-- PEGS -->
             <div class="pegs-container" id="pegsContainer">
                 <div class="peg-wrapper">
-                    <div class="peg-label source">Peg A (Source)</div>
+                    <div class="peg-label source" data-i18n="peg.A">Peg A (Source)</div>
                     <div class="disks-stack" id="stackA" data-peg="A">
                         <div class="peg" data-peg="A"></div>
                     </div>
                 </div>
                 <div class="peg-wrapper">
-                    <div class="peg-label spare">Peg B (Spare)</div>
+                    <div class="peg-label spare" data-i18n="peg.B">Peg B (Spare)</div>
                     <div class="disks-stack" id="stackB" data-peg="B">
                         <div class="peg" data-peg="B"></div>
                     </div>
                 </div>
                 <div class="peg-wrapper">
-                    <div class="peg-label target">Peg C (Target)</div>
+                    <div class="peg-label target" data-i18n="peg.C">Peg C (Target)</div>
                     <div class="disks-stack" id="stackC" data-peg="C">
                         <div class="peg" data-peg="C"></div>
                     </div>
@@ -729,30 +772,30 @@
             
             <!-- Main Controls -->
             <div class="controls">
-                <button class="btn btn-primary" onclick="undoMove()" id="undoBtn">↩️ Undo</button>
-                <button class="btn btn-warning" onclick="showHint()" id="hintBtn">💡 Hint</button>
-                <button class="btn btn-danger" onclick="restartPuzzle()">🔄 Restart</button>
-                <button class="btn btn-secondary" onclick="enterLearningMode()" id="learnBtn">📖 Learning Mode</button>
-                <button class="btn btn-secondary" onclick="backToStart()">🏠 Home</button>
+                <button class="btn btn-primary" onclick="undoMove()" id="undoBtn" data-i18n="ctrl.undo">↩️ Undo</button>
+                <button class="btn btn-warning" onclick="showHint()" id="hintBtn" data-i18n="ctrl.hint">💡 Hint</button>
+                <button class="btn btn-danger" onclick="restartPuzzle()" data-i18n="ctrl.restart">🔄 Restart</button>
+                <button class="btn btn-secondary" onclick="enterLearningMode()" id="learnBtn" data-i18n="ctrl.learn">📖 Learning Mode</button>
+                <button class="btn btn-secondary" onclick="backToStart()" data-i18n="ctrl.home">🏠 Home</button>
             </div>
             
             <!-- Learning Mode Panel (hidden by default) -->
             <div id="learningPanel" style="display: none; background: rgba(59,130,246,0.1); border: 1px solid var(--accent-blue); border-radius: 0.75rem; padding: 1rem; margin-top: 1rem;">
-                <h3 style="color: var(--accent-blue); margin-bottom: 0.75rem; text-align: center;">📚 Step-by-Step Learning Mode</h3>
-                <p style="text-align: center; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                <h3 style="color: var(--accent-blue); margin-bottom: 0.75rem; text-align: center;" data-i18n="learn.title">📚 Step-by-Step Learning Mode</h3>
+                <p style="text-align: center; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;" data-i18n="learn.desc">
                     Watch the optimal solution unfold! The timer continues running in the background.
                 </p>
                 <div class="learning-controls">
-                    <button class="btn btn-secondary" onclick="prevStep()">⏮️ Previous</button>
-                    <button class="btn btn-secondary" onclick="nextStep()">⏭️ Next</button>
-                    <button class="btn btn-primary" onclick="toggleAutoplay()" id="autoplayBtn">▶️ Autoplay</button>
-                    <button class="btn btn-danger" onclick="exitLearningMode()">✖️ Exit</button>
+                    <button class="btn btn-secondary" onclick="prevStep()" data-i18n="learn.prev">⏮️ Previous</button>
+                    <button class="btn btn-secondary" onclick="nextStep()" data-i18n="learn.next">⏭️ Next</button>
+                    <button class="btn btn-primary" onclick="toggleAutoplay()" id="autoplayBtn" data-i18n="learn.autoplay">▶️ Autoplay</button>
+                    <button class="btn btn-danger" onclick="exitLearningMode()" data-i18n="learn.exit">✖️ Exit</button>
                 </div>
                 <div class="step-info" id="stepInfo">Step 0 / 7 — Ready to begin!</div>
             </div>
             
             <!-- Theory Box -->
-            <div class="theory-box">
+            <div class="theory-box" data-i18n-html="theory.box">
                 <strong>💡 Theory:</strong> Each peg is a <span class="formula">Stack</span> (LIFO). 
                 The minimal number of moves is <span class="formula">2ⁿ − 1</span>, where n = number of disks. 
                 Recursive formula: <span class="formula">T(n) = 2T(n−1) + 1</span>, with base case <span class="formula">T(1) = 1</span>.
@@ -765,9 +808,9 @@
             
             <!-- Move History -->
             <div class="sidebar-section">
-                <h3>📜 Move History Log</h3>
+                <h3 data-i18n="side.log">📜 Move History Log</h3>
                 <div class="move-log" id="moveLog">
-                    <div style="color: var(--text-muted); font-style: italic; font-size: 0.8rem; text-align: center; padding: 1rem;">
+                    <div style="color: var(--text-muted); font-style: italic; font-size: 0.8rem; text-align: center; padding: 1rem;" data-i18n="side.logEmpty">
                         No moves yet. Click a peg to begin!
                     </div>
                 </div>
@@ -775,15 +818,15 @@
             
             <!-- Hint Display -->
             <div class="sidebar-section">
-                <h3>💡 Hint / Next Move</h3>
-                <div id="hintDisplay" class="hint-empty">
+                <h3 data-i18n="side.hint">💡 Hint / Next Move</h3>
+                <div id="hintDisplay" class="hint-empty" data-i18n="side.hintEmpty">
                     Press "Hint" to see the optimal next move.
                 </div>
             </div>
             
             <!-- Current State -->
             <div class="sidebar-section">
-                <h3>📊 Current Stack State</h3>
+                <h3 data-i18n="side.state">📊 Current Stack State</h3>
                 <div style="font-size: 0.8rem; font-family: monospace; background: var(--bg-primary); padding: 0.75rem; border-radius: 0.5rem; line-height: 1.8;" id="stackStateDisplay">
                     Loading...
                 </div>
@@ -791,8 +834,8 @@
             
             <!-- Rules -->
             <div class="sidebar-section">
-                <h3>📋 Rules</h3>
-                <ul style="font-size: 0.8rem; color: var(--text-secondary); padding-left: 1.2rem; line-height: 1.6;">
+                <h3 data-i18n="side.rules">📋 Rules</h3>
+                <ul style="font-size: 0.8rem; color: var(--text-secondary); padding-left: 1.2rem; line-height: 1.6;" data-i18n-html="side.rulesList">
                     <li>Only move the <strong>top disk</strong> from a peg</li>
                     <li>Only <strong>one disk</strong> at a time</li>
                     <li><strong>Larger disks</strong> cannot go on <strong>smaller ones</strong></li>
@@ -803,7 +846,7 @@
         </aside>
     </div>
     
-    <footer class="footer">
+    <footer class="footer" data-i18n="footer.text">
         Tower of Hanoi — Data Structures & Algorithms Assignment | Stacks • Recursion • Complexity
     </footer>
 </div>
@@ -814,35 +857,317 @@
 <!-- ============ MODAL ============ -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal" id="modal">
-        <h2 id="modalTitle">🎉 Congratulations!</h2>
+        <h2 id="modalTitle" data-i18n="modal.congrats">🎉 Congratulations!</h2>
         <div id="modalBody">
             <div class="summary-grid">
                 <div class="summary-item">
-                    <div class="label">Your Moves</div>
+                    <div class="label" data-i18n="modal.yourMoves">Your Moves</div>
                     <div class="value" id="modalMoves">0</div>
                 </div>
                 <div class="summary-item">
-                    <div class="label">Optimal Moves</div>
+                    <div class="label" data-i18n="modal.optimalMoves">Optimal Moves</div>
                     <div class="value" id="modalOptimal">0</div>
                 </div>
                 <div class="summary-item">
-                    <div class="label">Efficiency</div>
+                    <div class="label" data-i18n="modal.efficiency">Efficiency</div>
                     <div class="value" id="modalEfficiency">0%</div>
                 </div>
                 <div class="summary-item">
-                    <div class="label">Puzzles Done</div>
+                    <div class="label" data-i18n="modal.puzzles">Puzzles Done</div>
                     <div class="value" id="modalPuzzles">0</div>
                 </div>
             </div>
             <p id="modalMessage" style="text-align: center; color: var(--text-secondary); margin-bottom: 1rem;"></p>
         </div>
         <div class="modal-actions" id="modalActions">
-            <button class="btn btn-primary" onclick="closeModal()">Continue</button>
+            <button class="btn btn-primary" onclick="closeModal()" data-i18n="modal.continue">Continue</button>
         </div>
     </div>
 </div>
 
 <script>
+// ============== I18N (EN / ZH) ==============
+const I18N = {
+    en: {
+        'doc.title': 'Tower of Hanoi: The 20-Minute Challenge!',
+        'start.title': '🏛️ Tower of Hanoi: The 20-Minute Challenge!',
+        'start.subtitle': 'A classic puzzle teaching Stacks (LIFO), Recursion, and Algorithm Complexity.<br>Complete puzzles within the continuous 20-minute countdown!',
+        'start.statLevels': 'Difficulty Levels',
+        'start.statTime': 'Challenge Time',
+        'start.statMoves': 'Minimal Moves',
+        'start.selectDiff': 'Select Starting Difficulty:',
+        'start.diff3': '3 Disks (7 moves)',
+        'start.diff4': '4 Disks (15 moves)',
+        'start.diff5': '5 Disks (31 moves)',
+        'start.startBtn': '🚀 Start Challenge!',
+        'start.learnBtn': '📚 Enter Learning Mode (No Timer)',
+        'header.title': '🏛️ Tower of Hanoi Challenge',
+        'header.subtitle': 'Master Stacks • Recursion • Complexity Analysis',
+        'stats.moves': 'Moves',
+        'stats.optimal': 'Optimal',
+        'stats.hints': 'Hints Used',
+        'stats.puzzles': 'Puzzles Done',
+        'diff.label': 'Difficulty:',
+        'diff.3': '3 Disks',
+        'diff.4': '4 Disks',
+        'diff.5': '5 Disks',
+        'peg.A': 'Peg A (Source)',
+        'peg.B': 'Peg B (Spare)',
+        'peg.C': 'Peg C (Target)',
+        'ctrl.undo': '↩️ Undo',
+        'ctrl.hint': '💡 Hint',
+        'ctrl.restart': '🔄 Restart',
+        'ctrl.learn': '📖 Learning Mode',
+        'ctrl.home': '🏠 Home',
+        'learn.title': '📚 Step-by-Step Learning Mode',
+        'learn.desc': 'Watch the optimal solution unfold! The timer continues running in the background.',
+        'learn.prev': '⏮️ Previous',
+        'learn.next': '⏭️ Next',
+        'learn.autoplay': '▶️ Autoplay',
+        'learn.autoplayPause': '⏸️ Pause',
+        'learn.exit': '✖️ Exit',
+        'theory.box': '<strong>💡 Theory:</strong> Each peg is a <span class="formula">Stack</span> (LIFO). The minimal number of moves is <span class="formula">2ⁿ − 1</span>, where n = number of disks. Recursive formula: <span class="formula">T(n) = 2T(n−1) + 1</span>, with base case <span class="formula">T(1) = 1</span>.',
+        'side.log': '📜 Move History Log',
+        'side.logEmpty': 'No moves yet. Click a peg to begin!',
+        'side.hint': '💡 Hint / Next Move',
+        'side.hintEmpty': 'Press "Hint" to see the optimal next move.',
+        'side.state': '📊 Current Stack State',
+        'side.stateLoading': 'Loading...',
+        'side.rules': '📋 Rules',
+        'side.rulesList': '<li>Only move the <strong>top disk</strong> from a peg</li><li>Only <strong>one disk</strong> at a time</li><li><strong>Larger disks</strong> cannot go on <strong>smaller ones</strong></li><li>Move all disks from <strong>Peg A</strong> to <strong>Peg C</strong></li>',
+        'footer.text': 'Tower of Hanoi — Data Structures & Algorithms Assignment | Stacks • Recursion • Complexity',
+        'modal.congrats': '🎉 Congratulations!',
+        'modal.yourMoves': 'Your Moves',
+        'modal.optimalMoves': 'Optimal Moves',
+        'modal.efficiency': 'Efficiency',
+        'modal.puzzles': 'Puzzles Done',
+        'modal.continue': 'Continue',
+        'modal.victoryTitle': '🎉 Puzzle Complete!',
+        'modal.perfectTitle': '🏆 Perfect Solution!',
+        'modal.msgPerfect': 'You achieved the mathematical optimal solution! Outstanding work!',
+        'modal.msgGreat': 'Great job! Close to the optimal solution.',
+        'modal.msgGood': 'Good progress! Try to optimize your moves next time.',
+        'modal.nextChallenge': '⚡ Next Challenge (Continue Timer)',
+        'modal.increaseDiff': '🔼 Increase Difficulty',
+        'modal.close': '✕ Close',
+        'modal.timeUpTitle': "⏰ Time's up!",
+        'modal.timeUpMsg': "20-minute challenge has ended. Here's your final summary!",
+        'modal.returnHome': '🏠 Return to Home',
+        'toast.started': '🚀 Challenge started! 20 minutes on the clock.',
+        'toast.diffSet': '🎯 Difficulty set to {n} disks ({m} optimal moves)',
+        'toast.useLearningControls': '📚 Use Learning Mode controls to step through',
+        'toast.timeUpGameOver': '⏰ Time is up! Game over.',
+        'toast.sourceEmpty': '❌ Source peg contains no disks.',
+        'toast.selectedPeg': '📍 Selected Peg {peg} — click destination.',
+        'toast.deselected': 'Deselected.',
+        'toast.illegalMove': '❌ Illegal move! Disk {d} (larger) cannot be placed on Disk {d2} (smaller).',
+        'toast.moved': '✅ Moved Disk {d} from Peg {from} → Peg {to}',
+        'toast.undoDisabled': '❌ Undo is disabled in Learning Mode.',
+        'toast.nothingToUndo': '⚠️ Nothing to undo.',
+        'toast.timeUp': '⏰ Time is up!',
+        'toast.undid': '↩️ Undid: Disk {d} from Peg {to} → Peg {from}',
+        'toast.learningAllSteps': '📚 In Learning Mode, all steps are shown automatically.',
+        'toast.alreadySolved': '🎉 Puzzle already solved!',
+        'toast.hintMove': '💡 Hint: Move Disk {d} from Peg {from} to Peg {to}',
+        'toast.noHint': '💡 No hint available right now.',
+        'toast.restarted': '🔄 Puzzle restarted. Timer continues.',
+        'toast.nextPuzzle': '🚀 Next puzzle starting! Timer still running.',
+        'toast.fiveMin': '⚠️ 5 minutes remaining!',
+        'toast.oneMin': '🚨 ONLY 1 MINUTE REMAINING!',
+        'toast.learnEntered': '📚 Learning Mode entered (no timer)',
+        'toast.learnEnteredTimer': '📚 Learning Mode — Challenge timer continues in background!',
+        'toast.exitedLearn': '📕 Exited Learning Mode.',
+        'toast.allStepsComplete': '🎉 All steps complete!',
+        'toast.atStepZero': '⚠️ Already at step 0.',
+        'toast.stepDone': '📚 Step {n}: Move Disk {d} from Peg {from} → Peg {to}',
+        'toast.autoplayPaused': '⏸️ Autoplay paused.',
+        'toast.resetToReplay': '⚠️ Reset to replay.',
+        'toast.autoplayComplete': '🎉 Autoplay complete!',
+        'toast.autoplayStarted': '▶️ Autoplay started.',
+        'hint.move': 'Move Disk <strong>{d}</strong> from <strong>Peg {from}</strong> to <strong>Peg {to}</strong>',
+        'learn.info': 'Learning Mode: {n} optimal steps',
+        'learn.stepReady': 'Step 0 / {total} — Ready to begin!',
+        'learn.stepProgress': 'Step {step} / {total}',
+        'learn.stepNext': ' — Next: Disk {d} from Peg {from} → Peg {to}',
+        'learn.stepDone': ' — Done! 🎉',
+        'disk.label': 'Disk {n}',
+        'state.peg': 'Peg {peg}: ',
+        'state.empty': '(empty)',
+        'log.moveNum': 'Move {n}:',
+        'log.moveDesc': 'Disk {d} • {from} → {to}'
+    },
+    zh: {
+        'doc.title': '汉诺塔：20 分钟挑战赛！',
+        'start.title': '🏛️ 汉诺塔：20 分钟挑战赛！',
+        'start.subtitle': '一个通过经典谜题讲解 <strong>栈（LIFO）</strong>、<strong>递归</strong> 与 <strong>算法复杂度</strong> 的教学应用。<br>在连续的 20 分钟倒计时内完成尽可能多的谜题！',
+        'start.statLevels': '难度等级',
+        'start.statTime': '挑战时长',
+        'start.statMoves': '最少步数',
+        'start.selectDiff': '选择初始难度：',
+        'start.diff3': '3 个圆盘（7 步）',
+        'start.diff4': '4 个圆盘（15 步）',
+        'start.diff5': '5 个圆盘（31 步）',
+        'start.startBtn': '🚀 开始挑战！',
+        'start.learnBtn': '📚 进入教学模式（不计时）',
+        'header.title': '🏛️ 汉诺塔挑战',
+        'header.subtitle': '掌握 栈 • 递归 • 复杂度分析',
+        'stats.moves': '步数',
+        'stats.optimal': '最优步数',
+        'stats.hints': '已用提示',
+        'stats.puzzles': '已完成',
+        'diff.label': '难度：',
+        'diff.3': '3 盘',
+        'diff.4': '4 盘',
+        'diff.5': '5 盘',
+        'peg.A': 'A 柱（起点）',
+        'peg.B': 'B 柱（暂存）',
+        'peg.C': 'C 柱（目标）',
+        'ctrl.undo': '↩️ 撤销',
+        'ctrl.hint': '💡 提示',
+        'ctrl.restart': '🔄 重新开始',
+        'ctrl.learn': '📖 教学模式',
+        'ctrl.home': '🏠 主页',
+        'learn.title': '📚 分步教学模式',
+        'learn.desc': '观看最优解的逐步演示！计时器会在后台继续运行。',
+        'learn.prev': '⏮️ 上一步',
+        'learn.next': '⏭️ 下一步',
+        'learn.autoplay': '▶️ 自动播放',
+        'learn.autoplayPause': '⏸️ 暂停',
+        'learn.exit': '✖️ 退出',
+        'theory.box': '<strong>💡 原理：</strong>每根柱子都是一个 <span class="formula">栈</span>（后进先出 LIFO）。最少移动次数为 <span class="formula">2ⁿ − 1</span>，其中 n 为圆盘数量。递归公式：<span class="formula">T(n) = 2T(n−1) + 1</span>，基础情况 <span class="formula">T(1) = 1</span>。',
+        'side.log': '📜 移动历史',
+        'side.logEmpty': '还没有移动，点击一根柱子开始吧！',
+        'side.hint': '💡 提示 / 下一步',
+        'side.hintEmpty': '点击「提示」查看最优的下一步。',
+        'side.state': '📊 当前栈状态',
+        'side.stateLoading': '加载中...',
+        'side.rules': '📋 规则',
+        'side.rulesList': '<li>每次只能移动柱子最<strong>顶部</strong>的圆盘</li><li>一次只能移动<strong>一个圆盘</strong></li><li><strong>大圆盘</strong>不能放在<strong>小圆盘</strong>上面</li><li>把所有圆盘从 <strong>A 柱</strong> 移到 <strong>C 柱</strong></li>',
+        'footer.text': '汉诺塔 —— 数据结构与算法课程作业 | 栈 • 递归 • 复杂度',
+        'modal.congrats': '🎉 恭喜！',
+        'modal.yourMoves': '你的步数',
+        'modal.optimalMoves': '最优步数',
+        'modal.efficiency': '效率',
+        'modal.puzzles': '完成谜题',
+        'modal.continue': '继续',
+        'modal.victoryTitle': '🎉 通关！',
+        'modal.perfectTitle': '🏆 完美解法！',
+        'modal.msgPerfect': '你达成了数学最优解！非常出色！',
+        'modal.msgGreat': '干得漂亮！非常接近最优解。',
+        'modal.msgGood': '继续加油！下次尝试优化你的步数。',
+        'modal.nextChallenge': '⚡ 下一题（计时继续）',
+        'modal.increaseDiff': '🔼 提高难度',
+        'modal.close': '✕ 关闭',
+        'modal.timeUpTitle': '⏰ 时间到！',
+        'modal.timeUpMsg': '20 分钟挑战结束，以下是你的最终成绩！',
+        'modal.returnHome': '🏠 返回主页',
+        'toast.started': '🚀 挑战开始！20 分钟倒计时启动。',
+        'toast.diffSet': '🎯 难度已设为 {n} 个圆盘（最优 {m} 步）',
+        'toast.useLearningControls': '📚 请使用教学模式的按钮分步播放',
+        'toast.timeUpGameOver': '⏰ 时间到！游戏结束。',
+        'toast.sourceEmpty': '❌ 起始柱上没有圆盘。',
+        'toast.selectedPeg': '📍 已选中 {peg} 柱 —— 请点击目标柱。',
+        'toast.deselected': '已取消选择。',
+        'toast.illegalMove': '❌ 非法移动！大圆盘 {d} 不能放在小圆盘 {d2} 上。',
+        'toast.moved': '✅ 已将圆盘 {d} 从 {from} 柱移到 {to} 柱',
+        'toast.undoDisabled': '❌ 教学模式下无法撤销。',
+        'toast.nothingToUndo': '⚠️ 没有可撤销的操作。',
+        'toast.timeUp': '⏰ 时间到！',
+        'toast.undid': '↩️ 已撤销：圆盘 {d} 从 {to} 柱移回 {from} 柱',
+        'toast.learningAllSteps': '📚 教学模式下所有步骤会自动展示。',
+        'toast.alreadySolved': '🎉 谜题已完成！',
+        'toast.hintMove': '💡 提示：将圆盘 {d} 从 {from} 柱移到 {to} 柱',
+        'toast.noHint': '💡 当前没有可用的提示。',
+        'toast.restarted': '🔄 谜题已重置，计时继续。',
+        'toast.nextPuzzle': '🚀 下一题开始！计时仍在继续。',
+        'toast.fiveMin': '⚠️ 还剩 5 分钟！',
+        'toast.oneMin': '🚨 只剩 1 分钟了！',
+        'toast.learnEntered': '📚 已进入教学模式（不计时）',
+        'toast.learnEnteredTimer': '📚 已进入教学模式 —— 挑战计时在后台继续！',
+        'toast.exitedLearn': '📕 已退出教学模式。',
+        'toast.allStepsComplete': '🎉 所有步骤已完成！',
+        'toast.atStepZero': '⚠️ 已经在第 0 步了。',
+        'toast.stepDone': '📚 第 {n} 步：将圆盘 {d} 从 {from} 柱移到 {to} 柱',
+        'toast.autoplayPaused': '⏸️ 自动播放已暂停。',
+        'toast.resetToReplay': '⚠️ 已重置，可以重新播放。',
+        'toast.autoplayComplete': '🎉 自动播放完成！',
+        'toast.autoplayStarted': '▶️ 自动播放开始。',
+        'hint.move': '将圆盘 <strong>{d}</strong> 从 <strong>{from} 柱</strong> 移到 <strong>{to} 柱</strong>',
+        'learn.info': '教学模式：共 {n} 步最优解',
+        'learn.stepReady': '第 0 步 / 共 {total} 步 —— 准备开始！',
+        'learn.stepProgress': '第 {step} 步 / 共 {total} 步',
+        'learn.stepNext': ' —— 下一步：圆盘 {d} 从 {from} 柱移到 {to} 柱',
+        'learn.stepDone': ' —— 完成！🎉',
+        'disk.label': '圆盘 {n}',
+        'state.peg': '{peg} 柱：',
+        'state.empty': '（空）',
+        'log.moveNum': '第 {n} 步：',
+        'log.moveDesc': '圆盘 {d} • {from} → {to}'
+    }
+};
+
+let currentLang = 'en';
+
+function t(key, vars) {
+    const dict = I18N[currentLang] || I18N.en;
+    let s = dict[key];
+    if (s === undefined) s = I18N.en[key];
+    if (s === undefined) return key;
+    if (vars) {
+        for (const k in vars) s = s.replaceAll('{' + k + '}', vars[k]);
+    }
+    return s;
+}
+
+function applyI18n() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        el.innerHTML = t(el.getAttribute('data-i18n-html'));
+    });
+    document.title = t('doc.title');
+}
+
+function updateLangButtons() {
+    document.querySelectorAll('.lang-switch button').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-lang') === currentLang);
+    });
+}
+
+// Refresh texts that are generated by JavaScript
+function refreshDynamicText() {
+    if (gameState.learningMode) {
+        document.getElementById('hintDisplay').textContent = t('learn.info', { n: gameState.learningSolution.length });
+    } else if (gameState.currentHint) {
+        document.getElementById('hintDisplay').innerHTML = t('hint.move', gameState.currentHint);
+    } else if (gameState.moveHistory.length === 0) {
+        document.getElementById('hintDisplay').textContent = t('side.hintEmpty');
+        document.getElementById('hintDisplay').classList.add('hint-empty');
+    }
+    renderPegs();
+    updateSidebar();
+    if (gameState.learningMode) updateLearningDisplay();
+    const autoBtn = document.getElementById('autoplayBtn');
+    if (autoBtn && gameState.autoplayInterval) autoBtn.textContent = t('learn.autoplayPause');
+}
+
+function setLanguage(lang) {
+    if (!I18N[lang]) return;
+    currentLang = lang;
+    try { localStorage.setItem('hanoi-lang', lang); } catch (e) {}
+    document.documentElement.lang = (lang === 'zh') ? 'zh-CN' : 'en';
+    applyI18n();
+    updateLangButtons();
+    refreshDynamicText();
+}
+
+function initLanguage() {
+    let saved = null;
+    try { saved = localStorage.getItem('hanoi-lang'); } catch (e) {}
+    setLanguage(saved === 'zh' ? 'zh' : 'en');
+}
+
 // ============== STACK DATA STRUCTURE (ADT) ==============
 class Stack {
     constructor(name = '') {
@@ -865,6 +1190,7 @@ let gameState = {
     hintsUsed: 0,
     moveHistory: [],                    // {from, to, disk}
     selectedPeg: null,                  // Currently selected source peg
+    currentHint: null,                  // Last hint {from, to, d}
     totalPuzzlesDone: 0,
     challengeStarted: false,
     challengeTimeLeft: 20 * 60,         // seconds
@@ -896,7 +1222,7 @@ function startChallenge() {
     document.getElementById('startScreen').classList.add('hidden');
     document.getElementById('mainContent').style.display = 'block';
     updateUI();
-    showToast('🚀 Challenge started! 20 minutes on the clock.', 'info');
+    showToast(t('toast.started'), 'info');
 }
 
 function enterLearningModeFromStart() {
@@ -909,7 +1235,7 @@ function enterLearningModeFromStart() {
     document.getElementById('startScreen').classList.add('hidden');
     document.getElementById('mainContent').style.display = 'block';
     document.getElementById('learningPanel').style.display = 'block';
-    document.getElementById('stepInfo').textContent = `Step 0 / ${gameState.learningSolution.length} — Ready to begin!`;
+    document.getElementById('stepInfo').textContent = t('learn.stepReady', { total: gameState.learningSolution.length });
     updateUI();
 }
 
@@ -927,9 +1253,13 @@ function initPegs() {
     gameState.moves = 0;
     gameState.moveHistory = [];
     gameState.selectedPeg = null;
+    gameState.currentHint = null;
     gameState.learningMode = false;
     gameState.learningStep = 0;
     stopAutoplay();
+    const hintEl = document.getElementById('hintDisplay');
+    hintEl.classList.add('hint-empty');
+    hintEl.textContent = t('side.hintEmpty');
     renderPegs();
     updateSidebar();
     updateControls();
@@ -942,7 +1272,7 @@ function setDifficulty(n) {
     document.getElementById('diffBtn5').classList.toggle('active', n === 5);
     initPegs();
     document.getElementById('optimalMoves').textContent = Math.pow(2, n) - 1;
-    showToast(`🎯 Difficulty set to ${n} disks (${Math.pow(2, n)-1} optimal moves)`, 'info');
+    showToast(t('toast.diffSet', { n, m: Math.pow(2, n) - 1 }), 'info');
 }
 
 // ============== RENDERING ==============
@@ -957,7 +1287,7 @@ function renderPegs() {
             const div = document.createElement('div');
             const pos = gameState.difficulty - 1 - idx; // bottom disk at pos 0
             div.className = `disk size-${diskSize} pos-${pos}`;
-            div.textContent = `Disk ${diskSize}`;
+            div.textContent = t('disk.label', { n: diskSize });
             div.dataset.peg = pegName;
             div.dataset.size = diskSize;
             div.dataset.index = idx;
@@ -984,29 +1314,29 @@ function onPegClick(pegName) {
         // In learning mode, still allow clicking if not autoplaying
         if (gameState.learningMode && !gameState.autoplayInterval) {
             // In learning mode we are stepping through pre-solved solution
-            showToast('📚 Use Learning Mode controls to step through', 'info');
+            showToast(t('toast.useLearningControls'), 'info');
         }
         return;
     }
     
     if (gameState.challengeTimeLeft <= 0) {
-        showToast('⏰ Time is up! Game over.', 'error');
+        showToast(t('toast.timeUpGameOver'), 'error');
         return;
     }
     
     // First click: select source peg
     if (gameState.selectedPeg === null) {
         if (gameState.pegs[pegName].length === 0) {
-            showToast('❌ Source peg contains no disks.', 'error');
+            showToast(t('toast.sourceEmpty'), 'error');
             return;
         }
         gameState.selectedPeg = pegName;
-        showToast(`📍 Selected Peg ${pegName} — click destination.`, 'info');
+        showToast(t('toast.selectedPeg', { peg: pegName }), 'info');
     } else {
         // Second click: try to move from selectedPeg to pegName
         if (gameState.selectedPeg === pegName) {
             gameState.selectedPeg = null;
-            showToast('Deselected.', 'info');
+            showToast(t('toast.deselected'), 'info');
             renderPegs();
             return;
         }
@@ -1022,7 +1352,7 @@ function attemptMove(from, to) {
     
     // Source check
     if (fromPeg.length === 0) {
-        showToast('❌ Source peg contains no disks.', 'error');
+        showToast(t('toast.sourceEmpty'), 'error');
         return;
     }
     
@@ -1030,7 +1360,7 @@ function attemptMove(from, to) {
     
     // Destination check: LIFO rule - larger cannot go on smaller
     if (toPeg.length > 0 && toPeg[toPeg.length - 1] < topDisk) {
-        showToast(`❌ Illegal move! Disk ${topDisk} (larger) cannot be placed on Disk ${toPeg[toPeg.length - 1]} (smaller).`, 'error');
+        showToast(t('toast.illegalMove', { d: topDisk, d2: toPeg[toPeg.length - 1] }), 'error');
         return;
     }
     
@@ -1040,8 +1370,9 @@ function attemptMove(from, to) {
     
     gameState.moves++;
     gameState.moveHistory.push({ from, to, disk: topDisk });
+    gameState.currentHint = null;
     
-    showToast(`✅ Moved Disk ${topDisk} from Peg ${from} → Peg ${to}`, 'success');
+    showToast(t('toast.moved', { d: topDisk, from, to }), 'success');
     
     updateUI();
     
@@ -1053,15 +1384,15 @@ function attemptMove(from, to) {
 
 function undoMove() {
     if (gameState.learningMode) {
-        showToast('❌ Undo is disabled in Learning Mode.', 'error');
+        showToast(t('toast.undoDisabled'), 'error');
         return;
     }
     if (gameState.moveHistory.length === 0) {
-        showToast('⚠️ Nothing to undo.', 'warning');
+        showToast(t('toast.nothingToUndo'), 'warning');
         return;
     }
     if (gameState.challengeActive && gameState.challengeTimeLeft <= 0) {
-        showToast('⏰ Time is up!', 'error');
+        showToast(t('toast.timeUp'), 'error');
         return;
     }
     
@@ -1069,8 +1400,9 @@ function undoMove() {
     gameState.pegs[last.to].pop();
     gameState.pegs[last.from].push(last.disk);
     gameState.moves = Math.max(0, gameState.moves - 1);
+    gameState.currentHint = null;
     
-    showToast(`↩️ Undid: Disk ${last.disk} from Peg ${last.to} → Peg ${last.from}`, 'info');
+    showToast(t('toast.undid', { d: last.disk, to: last.to, from: last.from }), 'info');
     gameState.selectedPeg = null;
     renderPegs();
     updateSidebar();
@@ -1079,30 +1411,31 @@ function undoMove() {
 
 function showHint() {
     if (gameState.learningMode) {
-        showToast('📚 In Learning Mode, all steps are shown automatically.', 'info');
+        showToast(t('toast.learningAllSteps'), 'info');
         return;
     }
     if (gameState.pegs.C.length === gameState.difficulty) {
-        showToast('🎉 Puzzle already solved!', 'success');
+        showToast(t('toast.alreadySolved'), 'success');
         return;
     }
     const solution = generateOptimalSolution(gameState.difficulty);
-    // Find first step in solution matching current state
-    const stepsTaken = gameState.moveHistory;
-    // Simple approach: show first unsolved step from solution
-    let hint = solution.find((s, i) => {
+    // Show first unsolved step from the optimal solution
+    let hint = solution.find((s) => {
         return !gameState.moveHistory.some(h => h.from === s.from && h.to === s.to);
     });
     
     if (hint) {
         gameState.hintsUsed++;
         document.getElementById('hintsUsed').textContent = gameState.hintsUsed;
-        showToast(`💡 Hint: Move Disk ${getTopDiskSize(hint.from)} from Peg ${hint.from} to Peg ${hint.to}`, 'info');
-        document.getElementById('hintDisplay').innerHTML = 
-            `Move Disk <strong>${getTopDiskSize(hint.from)}</strong> from <strong>Peg ${hint.from}</strong> to <strong>Peg ${hint.to}</strong>`;
+        const d = getTopDiskSize(hint.from);
+        gameState.currentHint = { from: hint.from, to: hint.to, d };
+        showToast(t('toast.hintMove', { d, from: hint.from, to: hint.to }), 'info');
+        const hintEl = document.getElementById('hintDisplay');
+        hintEl.classList.remove('hint-empty');
+        hintEl.innerHTML = t('hint.move', { d, from: hint.from, to: hint.to });
         updateUI();
     } else {
-        showToast('💡 No hint available right now.', 'warning');
+        showToast(t('toast.noHint'), 'warning');
     }
 }
 
@@ -1113,11 +1446,11 @@ function getTopDiskSize(peg) {
 
 function restartPuzzle() {
     if (gameState.challengeActive && gameState.challengeTimeLeft <= 0) {
-        showToast('⏰ Time is up!', 'error');
+        showToast(t('toast.timeUp'), 'error');
         return;
     }
     initPegs();
-    showToast('🔄 Puzzle restarted. Timer continues.', 'warning');
+    showToast(t('toast.restarted'), 'warning');
 }
 
 // ============== WIN CHECK ==============
@@ -1130,34 +1463,34 @@ function onPuzzleComplete() {
         gameState.totalPuzzlesDone++;
     }
     
-    document.getElementById('modalTitle').textContent = perfect ? '🏆 Perfect Solution!' : '🎉 Puzzle Complete!';
+    document.getElementById('modalTitle').textContent = perfect ? t('modal.perfectTitle') : t('modal.victoryTitle');
     document.getElementById('modal').className = 'modal victory';
     document.getElementById('modalMoves').textContent = gameState.moves;
     document.getElementById('modalOptimal').textContent = optimal;
     document.getElementById('modalEfficiency').textContent = efficiency + '%';
     document.getElementById('modalPuzzles').textContent = gameState.totalPuzzlesDone;
     document.getElementById('modalMessage').textContent = perfect 
-        ? 'You achieved the mathematical optimal solution! Outstanding work!' 
+        ? t('modal.msgPerfect')
         : efficiency > 70 
-            ? 'Great job! Close to the optimal solution.' 
-            : 'Good progress! Try to optimize your moves next time.';
+            ? t('modal.msgGreat')
+            : t('modal.msgGood');
     document.getElementById('modalActions').innerHTML = '';
     
     if (gameState.challengeActive && gameState.challengeTimeLeft > 0) {
         const btn = document.createElement('button');
         btn.className = 'btn btn-success';
-        btn.textContent = '⚡ Next Challenge (Continue Timer)';
+        btn.textContent = t('modal.nextChallenge');
         btn.onclick = () => {
             closeModal();
             initPegs();
             // Stay at same difficulty, move counter resets
-            showToast('🚀 Next puzzle starting! Timer still running.', 'info');
+            showToast(t('toast.nextPuzzle'), 'info');
         };
         document.getElementById('modalActions').appendChild(btn);
         
         const upgradeBtn = document.createElement('button');
         upgradeBtn.className = 'btn btn-primary';
-        upgradeBtn.textContent = '🔼 Increase Difficulty';
+        upgradeBtn.textContent = t('modal.increaseDiff');
         upgradeBtn.onclick = () => {
             closeModal();
             const next = Math.min(5, gameState.difficulty + 1);
@@ -1168,7 +1501,7 @@ function onPuzzleComplete() {
     
     const closeBtn = document.createElement('button');
     closeBtn.className = 'btn btn-secondary';
-    closeBtn.textContent = '✕ Close';
+    closeBtn.textContent = t('modal.close');
     closeBtn.onclick = closeModal;
     document.getElementById('modalActions').appendChild(closeBtn);
     
@@ -1190,10 +1523,10 @@ function startTimer() {
         updateTimerDisplay();
         
         if (gameState.challengeTimeLeft === 300) { // 5:00
-            showToast('⚠️ 5 minutes remaining!', 'warning');
+            showToast(t('toast.fiveMin'), 'warning');
         }
         if (gameState.challengeTimeLeft === 60) { // 1:00
-            showToast('🚨 ONLY 1 MINUTE REMAINING!', 'error');
+            showToast(t('toast.oneMin'), 'error');
         }
         
         if (gameState.challengeTimeLeft <= 0) {
@@ -1231,7 +1564,7 @@ function updateTimerDisplay() {
 
 function onTimeUp() {
     gameState.challengeActive = false;
-    document.getElementById('modalTitle').textContent = '⏰ Time\'s up!';
+    document.getElementById('modalTitle').textContent = t('modal.timeUpTitle');
     document.getElementById('modal').className = 'modal timeup';
     document.getElementById('modalMoves').textContent = gameState.moves;
     document.getElementById('modalOptimal').textContent = Math.pow(2, gameState.difficulty) - 1;
@@ -1239,12 +1572,12 @@ function onTimeUp() {
         ? Math.round((Math.pow(2, gameState.difficulty) - 1) / Math.max(1, gameState.moves) * 100) : 0;
     document.getElementById('modalEfficiency').textContent = eff + '%';
     document.getElementById('modalPuzzles').textContent = gameState.totalPuzzlesDone;
-    document.getElementById('modalMessage').textContent = '20-minute challenge has ended. Here\'s your final summary!';
+    document.getElementById('modalMessage').textContent = t('modal.timeUpMsg');
     document.getElementById('modalActions').innerHTML = '';
     
     const homeBtn = document.createElement('button');
     homeBtn.className = 'btn btn-primary';
-    homeBtn.textContent = '🏠 Return to Home';
+    homeBtn.textContent = t('modal.returnHome');
     homeBtn.onclick = backToStart;
     document.getElementById('modalActions').appendChild(homeBtn);
     
@@ -1265,16 +1598,16 @@ function enterLearningMode() {
     gameState.moves = 0;
     
     document.getElementById('learningPanel').style.display = 'block';
-    document.getElementById('hintDisplay').textContent = 'Learning Mode: ' + gameState.learningSolution.length + ' optimal steps';
-    document.getElementById('stepInfo').textContent = `Step 0 / ${gameState.learningSolution.length} — Ready to begin!`;
+    document.getElementById('hintDisplay').textContent = t('learn.info', { n: gameState.learningSolution.length });
+    document.getElementById('stepInfo').textContent = t('learn.stepReady', { total: gameState.learningSolution.length });
     
     renderPegs();
     updateSidebar();
     
     if (!gameState.challengeActive) {
-        showToast('📚 Learning Mode entered (no timer)', 'info');
+        showToast(t('toast.learnEntered'), 'info');
     } else {
-        showToast('📚 Learning Mode — Challenge timer continues in background!', 'info');
+        showToast(t('toast.learnEnteredTimer'), 'info');
     }
 }
 
@@ -1282,13 +1615,13 @@ function exitLearningMode() {
     stopAutoplay();
     gameState.learningMode = false;
     document.getElementById('learningPanel').style.display = 'none';
-    showToast('📕 Exited Learning Mode.', 'info');
+    showToast(t('toast.exitedLearn'), 'info');
 }
 
 function nextStep() {
     if (!gameState.learningMode) return;
     if (gameState.learningStep >= gameState.learningSolution.length) {
-        showToast('🎉 All steps complete!', 'success');
+        showToast(t('toast.allStepsComplete'), 'success');
         return;
     }
     const step = gameState.learningSolution[gameState.learningStep];
@@ -1300,18 +1633,18 @@ function nextStep() {
 function prevStep() {
     if (!gameState.learningMode) return;
     if (gameState.learningStep <= 0) {
-        showToast('⚠️ Already at step 0.', 'warning');
+        showToast(t('toast.atStepZero'), 'warning');
         return;
     }
+    stopAutoplay();
+    document.getElementById('autoplayBtn').textContent = t('learn.autoplay');
     gameState.learningStep--;
     const step = gameState.learningSolution[gameState.learningStep];
-    // Reverse the move
-    gameState.pegs[step.to].pop();
-    gameState.pegs[step.from].push(step.disk || gameState.pegs[step.from].length === 0 ? gameState.pegs[step.to].length === 0 ? 0 : null : step.from);
-    // Actually we need the disk size - re-query
-    // Since step objects have {from, to, disk}
-    gameState.pegs[step.to].push(step.disk);
-    gameState.pegs[step.from].pop();
+    // Reverse the move: put the disk back from `to` onto `from`
+    const disk = gameState.pegs[step.to].pop();
+    gameState.pegs[step.from].push(disk);
+    step.disk = disk;
+    gameState.moves = Math.max(0, gameState.learningStep);
     updateLearningDisplay();
     renderPegs();
     updateSidebar();
@@ -1325,15 +1658,19 @@ function executeLearningMove(step) {
     gameState.moves = gameState.learningStep + 1;
     renderPegs();
     updateSidebar();
-    showToast(`📚 Step ${gameState.learningStep + 1}: Move Disk ${disk} from Peg ${from} → Peg ${to}`, 'info');
+    showToast(t('toast.stepDone', { n: gameState.learningStep + 1, d: disk, from, to }), 'info');
 }
 
 function updateLearningDisplay() {
-    document.getElementById('stepInfo').textContent = 
-        `Step ${gameState.learningStep} / ${gameState.learningSolution.length}` +
-        (gameState.learningStep < gameState.learningSolution.length 
-            ? ` — Next: Disk ${gameState.learningSolution[gameState.learningStep].disk || '?'} from Peg ${gameState.learningSolution[gameState.learningStep].from} → Peg ${gameState.learningSolution[gameState.learningStep].to}` 
-            : ' — Done! 🎉');
+    const sol = gameState.learningSolution;
+    const step = gameState.learningStep;
+    let text = t('learn.stepProgress', { step: step, total: sol.length });
+    if (step < sol.length) {
+        text += t('learn.stepNext', { d: sol[step].disk || '?', from: sol[step].from, to: sol[step].to });
+    } else {
+        text += t('learn.stepDone');
+    }
+    document.getElementById('stepInfo').textContent = text;
 }
 
 let autoplayInterval = null;
@@ -1341,11 +1678,11 @@ function toggleAutoplay() {
     if (!gameState.learningMode) return;
     if (gameState.autoplayInterval) {
         stopAutoplay();
-        document.getElementById('autoplayBtn').textContent = '▶️ Autoplay';
-        showToast('⏸️ Autoplay paused.', 'info');
+        document.getElementById('autoplayBtn').textContent = t('learn.autoplay');
+        showToast(t('toast.autoplayPaused'), 'info');
     } else {
         if (gameState.learningStep >= gameState.learningSolution.length) {
-            showToast('⚠️ Reset to replay.', 'warning');
+            showToast(t('toast.resetToReplay'), 'warning');
             // Reset pegs
             gameState.pegs = { A: [], B: [], C: [] };
             for (let i = gameState.difficulty; i >= 1; i--) gameState.pegs.A.push(i);
@@ -1356,8 +1693,8 @@ function toggleAutoplay() {
         gameState.autoplayInterval = setInterval(() => {
             if (gameState.learningStep >= gameState.learningSolution.length) {
                 stopAutoplay();
-                document.getElementById('autoplayBtn').textContent = '▶️ Autoplay';
-                showToast('🎉 Autoplay complete!', 'success');
+                document.getElementById('autoplayBtn').textContent = t('learn.autoplay');
+                showToast(t('toast.autoplayComplete'), 'success');
                 return;
             }
             const step = gameState.learningSolution[gameState.learningStep];
@@ -1365,8 +1702,8 @@ function toggleAutoplay() {
             gameState.learningStep++;
             updateLearningDisplay();
         }, 1200);
-        document.getElementById('autoplayBtn').textContent = '⏸️ Pause';
-        showToast('▶️ Autoplay started.', 'success');
+        document.getElementById('autoplayBtn').textContent = t('learn.autoplayPause');
+        showToast(t('toast.autoplayStarted'), 'success');
     }
 }
 
@@ -1408,12 +1745,13 @@ function updateSidebar() {
     // Move log
     const log = document.getElementById('moveLog');
     if (gameState.moveHistory.length === 0) {
-        log.innerHTML = '<div style="color: var(--text-muted); font-style: italic; font-size: 0.8rem; text-align: center; padding: 1rem;">No moves yet. Click a peg to begin!</div>';
+        log.innerHTML = '<div style="color: var(--text-muted); font-style: italic; font-size: 0.8rem; text-align: center; padding: 1rem;">'
+            + t('side.logEmpty') + '</div>';
     } else {
         log.innerHTML = gameState.moveHistory.map((h, i) => 
             `<div class="log-entry">
-                <span class="move-num">Move ${i+1}:</span>
-                <span class="move-desc">Disk ${h.disk} • ${h.from} → ${h.to}</span>
+                <span class="move-num">${t('log.moveNum', { n: i + 1 })}</span>
+                <span class="move-desc">${t('log.moveDesc', { d: h.disk, from: h.from, to: h.to })}</span>
             </div>`
         ).join('');
         log.scrollTop = log.scrollHeight;
@@ -1421,14 +1759,9 @@ function updateSidebar() {
     
     // Stack state (ASCII visualization)
     const state = document.getElementById('stackStateDisplay');
-    const lines = ['Peg A: ', 'Peg B: ', 'Peg C: '];
-    ['A', 'B', 'C'].forEach((peg, idx) => {
+    const lines = ['A', 'B', 'C'].map(peg => {
         const disks = gameState.pegs[peg];
-        if (disks.length === 0) {
-            lines[idx] += '(empty)';
-        } else {
-            lines[idx] += disks.join(' → ');
-        }
+        return t('state.peg', { peg }) + (disks.length === 0 ? t('state.empty') : disks.join(' → '));
     });
     state.innerHTML = lines.join('<br>');
 }
@@ -1472,6 +1805,9 @@ document.addEventListener('keydown', (e) => {
 
 // Auto-correct peg state for learning mode when solution is generated
 // Each solution step already has correct disk size from recursive generator
+
+// ============== BOOT ==============
+initLanguage();
 </script>
 
 </body>

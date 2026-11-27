@@ -59,6 +59,10 @@ python3 -m http.server 8080
 ### Responsive UI
 - Fluid layout from classroom projectors → desktops → mobile touchscreens
 
+### Bilingual Interface
+- Switch between **English** and **中文** at any time via the top-right toggle
+- Your choice is remembered across visits (`localStorage`)
+
 ---
 
 ## 🧱 Data Structures & Algorithms
