@@ -13,6 +13,8 @@ Built as a Data Structures & Algorithms coursework project. Zero dependencies, z
 
 ## 🎮 Live Demo
 
+**▶ Play now: https://1518463190yu-cyber.github.io/tower-of-hanoi/**
+
 Open [`index.html`](index.html) in any modern browser — no server, no install required.
 
 Or run a local server:
